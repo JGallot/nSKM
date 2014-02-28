@@ -1,16 +1,3 @@
-################################################################
-# Created 2010-05-04, Thomas Fischer
-# ---
-#
-# Howto for LSKUM (Linux SSH-Key- & User-Management)
-#
-#################################################################
-
-INFO  
----------------------------------------------------
-For changelog, info and so on please view 
-the file VERSION also included in this package.
-
 
 
 PREPARE LSKUM (1-time modification)
@@ -26,9 +13,8 @@ Preparing your LSKUM Server:
 		'$GLOBALS['sudousr'] = "ADDyourGLOBALsudoUSRNAMEhere";' --> '$GLOBALS['sudousr'] = "YOUR-SUDO-USR";'
 
 
-PREPARE new host for LSKUM (1-time modification) 
+PREPARE new host (1-time modification) 
 ---------------------------------------------------
-Integrating your new host into LSKUM:
 
 	- SSH Login to the remote system with an administrative account
 	- Create the LSKUM sudousr you have defined
