@@ -1,0 +1,32 @@
+<?php
+ // mysql connection data
+ //  default: localhost
+ $mysql_host = "localhost";
+ //  default: skmadmin
+ $mysql_user = "skmadmin";
+ //  default: demo
+ $mysql_pass = "demo";
+ //  default: skm
+ $mysql_db = "skm";
+ 
+ // home directory of the webserver user, containing .ssh directory etc.
+ // no trailing slash required
+ // example: $home_of_webserver_account = "/var/www";
+ $home_of_webserver_account = "/var/empty";
+ $gpgbin = "/usr/bin/gpg";
+ $admin_email = "youremail@yourdomain.com";
+
+ // Configuration for ssh connection
+ // sudouser is the name of the remote unix account used to manage ssh keys.
+ $sudousr = "root";
+
+ // Send mail while deploying ? (0=no send / 1=send)
+ $SKM_SEND_MAIL = 1;
+
+ // Default Message adding at the top of authorized_keys
+ $SKM_AUTH_MSG="######### Do not modify, modifications will be erased ##########";
+
+ // GLPI STyle information ?
+ $SKM_GLPI=0;
+
+?>

@@ -1,0 +1,38 @@
+nSKM  by Jérôme Gallot
+-------------------------------
+Forked from version: skm v 2.5
+------------------------------
+
+* Correction of images in email
+* Add the flag '$SKM_SEND_MAIL' in config in order to deactivate email sending
+* Add the flag 'SKM_GLPI'
+* using smarty
+* DB : add version in database
+* exclude already added keyring from list of add keyrings
+* delete unused files
+* remove global file list (use puppet instead)
+
+
+
+TODO
+* delete hostgroup
+* Repair search keys
+* Repair search keyrings
+* Repair rename of SSH keyring -> cerate new keyring instead of rename actual name
+* DB : convert to utf-8
+* check version  on first access in order to upgrade database (transactionel)
+* innodb instead of MyISAM ?
+* add database abstraction (PDO ?)
+* USe PHPssh2 functions
+* Synchronize list of of servers with others datasources (GLPI/VMWARE ?)
+* add delete confirmations in IHM
+* while renaming, check if name of keyring or already exists
+* message "No group found...No group found..." for a host appears in up left corner 
+* add a for error/warnings messages
+* rewrite  access to GET POST
+* when changing a name of a host, the elements modified are lost where pressing  
+* Paginate results lists (host, groups, etc.)
+* purge old saved authorized_keys on hosts
+* add feature to create account if not exists
+* correct pear errors
+* when deleting user, check if it is used by hosts --> otherwise walinkg dead account
