@@ -1,7 +1,7 @@
 <?php
 require_once('inc/global.inc.php');
 
-$smarty->assign("title","SKM - Key Security Search");
+$smarty->assign("title","nSKM - Key Security Search");
 
 if (isset($_GET["key"])) $id_key = $_GET["key"]; else $id_key = "";
 if (isset($_POST["key"])) $id_key = $_POST["key"]; else $id_key = "";
