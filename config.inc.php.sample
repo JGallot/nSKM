@@ -29,4 +29,7 @@
  // GLPI STyle information ?
  $SKM_GLPI=0;
 
+ // Number of results by page
+ $SKM_NB_RESULTS_PER_PAGES=20;
+
 ?>
