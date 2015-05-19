@@ -7,9 +7,14 @@
 <center><fieldset><legend>All Hosts Overview</legend>
 
 <div id="onglets_html">
-    <ul id="onglets">
-        <li class="onglet_n onglet"><a href="index.php">1</a></li>
-        <li class="onglet_n onglet"><a href="forum.php">2</a></li>
+    <ul class="paginate pag1 clearfix" id="onglets">
+        {for $var=1 to $nb_pages}
+            {if $current_page == $var}   
+            <li class="current">{$var}</li>
+            {else}
+            <li class="single"><a href="?page={$var}">{$var}</a></li>
+            {/if}
+        {/for}
     </ul>
 </div>
 

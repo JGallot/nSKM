@@ -2,6 +2,18 @@
 
 require_once('inc/global.inc.php');
 
+$nombreDeElementsParPage = $SKM_NB_RESULTS_PER_PAGES;
+
+/* DEBUT recuperation du numéro de page courante */
+if (isset($_GET['page']))
+    { $page = (int) $_GET['page']; } 
+else // La variable n'existe pas, c'est la première fois qu'on charge la page
+    { $page = 1;} // On se met sur la page 1 (par défaut)
+    
+/* On calcule le numéro du premier élément qu'on prend pour le LIMIT de MySQL */
+$premierElementAAfficher = ($page - 1) * $nombreDeElementsParPage;
+    
+   
 if (isset($_GET["aix"])) $aix = $_GET["aix"]; else $aix = "";
 if (isset($_GET["rhel"])) $rhel = $_GET["rhel"]; else $rhel = "";
 if (isset($_GET["solaris"])) $solaris = $_GET["solaris"]; else $solaris = "";
@@ -10,8 +22,19 @@ if (isset($_GET["action"])) $action = $_GET["action"]; else $action = "";
 
 $smarty->assign("title","All Hosts Overview");
 
-$result = mysql_query( "SELECT * FROM `hosts` ORDER BY `name`" )
-	 or die (mysql_error()."<br>Couldn't execute query: $query");
+$result = mysql_query( "SELECT COUNT(*) AS total FROM `hosts`" )
+    or die (mysql_error()."<br>Couldn't execute query: $query");
+$nr = mysql_num_rows( $result );
+if(!empty($nr)) 
+{
+    $row = mysql_fetch_array( $result );
+    $nb_pages  = ceil($row['total'] / $nombreDeElementsParPage);
+}
+else 
+    $nb_pages = 0;
+
+$result = mysql_query( "SELECT * FROM `hosts` ORDER BY `name` LIMIT $premierElementAAfficher, $nombreDeElementsParPage " )
+    or die (mysql_error()."<br>Couldn't execute query: $query");
 
 $nr = mysql_num_rows( $result );
 if(empty($nr)) 
@@ -57,5 +80,8 @@ else
     mysql_free_result( $result );
 }
 $smarty->assign("hosts",$hosts);
+$smarty->assign("nb_pages",$nb_pages);
+$smarty->assign("current_page",$page);
+
 $smarty->display('show_all_hosts.tpl');
 ?>
