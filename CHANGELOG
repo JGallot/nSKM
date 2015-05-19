@@ -14,6 +14,9 @@ CHANGES :
 * FEATURE : remove global file list (use puppet or another deploiement tool instead)
 * FEATURE : add special line at the top of authorized_keys
 * FEATURE : results in all groups overview is paginated
+* BUG #1 : Bug SQL upgrade 
+* BUG #3 : keyring re-deployment doesn't work
+
 
 ---------------------------------------
 TODO
@@ -38,3 +41,4 @@ TODO
 * BUG : correct pear errors (mail)
 * BUG : when deleting user, check if it is used by hosts
 * BUG : don't allow empty group/keyring name
+* FEATURE : add in doc -> create Smarty template cache + install php-mail/php-mail-mime

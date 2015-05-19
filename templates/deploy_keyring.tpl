@@ -9,7 +9,7 @@
       <tr>
         <td class="Type"><img src='images/keyring_little.gif'>
 
-      <select class="list" name="keyring">;
+      <select class="list" name="id_keyring">;
       <option selected value="0">Please select a keyring</option>
         {foreach from=$keyrings key=idx item=mkey}
         <option value={$idx}>{$mkey}</option>
