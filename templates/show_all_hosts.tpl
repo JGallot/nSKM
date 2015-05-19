@@ -20,7 +20,9 @@
 
 <thead><tr><th>icon</th><th>Hostname</th><th>IP @</th>
 {if isset($SKM_GLPI)}
+{if $SKM_GLPI}
 <th>Serial #</th><th>OS type</th><th>OS Version</th><th>Monitor</th></tr>
+{/if}
 {/if}
 </thead><tbody>
 {foreach from=$hosts key=idx item=host}
@@ -33,14 +35,16 @@
 <td><a href='host-view.php?id={$idx}&id_hostgroup={$host.id_group}'>{$host.name}</a></td>
 <td>{$host.ip}</td>
 {if isset($SKM_GLPI)}
+           {if $SKM_GLPI}
 <td>{$host.serialno}</td><td>{$host.ostype}</td><td>{$host.osvers}</td>
-{/if}
 {if $host.monitor != ''}
  <td><img src='images/ok.gif'></td>
 {else}
 <td></td>
 {/if}
 
+{/if}
+{/if}
 {/foreach}
 </tr></tbody></table>
 
