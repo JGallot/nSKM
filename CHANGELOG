@@ -1,7 +1,7 @@
 nSKM  by Jérôme Gallot
--------------------------------
-Forked from version: skm v 2.5
-------------------------------
+---------------------------------------
+v0.1.0 Forked from version: skm v 2.5
+---------------------------------------
 
 CHANGES :
 * BUG : Correction of images in email
@@ -11,11 +11,13 @@ CHANGES :
 * FEATURE : DB - add version in database
 * FEATURE : exclude already added keyring from list of add keyrings
 * FEATURE : delete unused files
-* FEATURE : remove global file list (use puppet instead)
+* FEATURE : remove global file list (use puppet or another deploiement tool instead)
+* FEATURE : add special line at the top of authorized_keys
+* FEATURE : results in all groups overview is paginated
 
-
-
+---------------------------------------
 TODO
+---------------------------------------
 * FEATURE : delete hostgroup
 * BUG : Repair search keys
 * BUG : Repair search keyrings
@@ -35,3 +37,4 @@ TODO
 * FEATURE : create account if not exists
 * BUG : correct pear errors (mail)
 * BUG : when deleting user, check if it is used by hosts
+* BUG : don't allow empty group/keyring name
