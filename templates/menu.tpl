@@ -20,10 +20,12 @@
       <fieldset><legend>Reports</legend>
         <a href='view_keys.php'>Key String value list</a><br>
 	{if isset($SKM_GLPI)}
-        <a href='serial_search.php'>SerialNo Search</a><br>
-        <a href='search_model.php'>Model # Search</a><br>
-        <a href='search_contract.php'>Maint.Contract Search</a><br>
-	{/if}
+           {if $SKM_GLPI}
+            <a href='serial_search.php'>SerialNo Search</a><br>
+            <a href='search_model.php'>Model # Search</a><br>
+            <a href='search_contract.php'>Maint.Contract Search</a><br>
+           {/if}
+        {/if}
         <a href='search_key_securities.php'>Search Key Securities</a><br>
         <a href='search_keyring_securities.php'>Search Keyring Securities</a><br>
       </fieldset>
