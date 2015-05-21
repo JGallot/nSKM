@@ -2,7 +2,21 @@
 {include file="header.tpl"}
 {include file="menu.tpl"}
 <td width='80%'>
+{if isset($output_clean)}
+<fieldset><legend>Cleaning Known_hosts for {$hostname}</legend>
+<table class="detail">
+  <tr>
+    <td class="deployment">
 
+      {$output_clean}
+
+    </td>
+  </tr>
+</table>
+
+</fieldset>
+{/if}
+    
 {if isset($output1)}
 <fieldset><legend>Constructing securities for {$account_name} on host {$hostname}</legend>
 <table class="detail">

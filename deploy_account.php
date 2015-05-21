@@ -25,10 +25,11 @@ $smarty->assign("id_group",$id_group);
 $output='';
 
 // Clean Known-hosts if needed
-  if ($clean)
+  if ($clean==1)
   {
-      $output.= "Cleaning SKM server Known_hosts File<br>";
-      $output.= ssh_clean_known_hosts_file($hostname,get_host_ip($id));
+      $output_clean.= ssh_clean_known_hosts_file($hostname,get_host_ip($id));
+      $output.=$output_clean;
+      $smarty->assign('output_clean',$output_clean);
   }
 list($res_conn,$mess_conn)= test_connection($hostname,$clean);
 
