@@ -993,7 +993,7 @@ function deploy_globalfile($id_file,$id_host){
 
 function ssh_clean_known_hosts_file($hostname,$ip)
 {
-    $output = shell_exec("ssh-keygen -R $hostname ; ssh-keygen -R $ip");
+    $output = shell_exec("ssh-keygen -R $hostname ; ssh-keygen -R $ip 2>&1");
     if (empty($output ))
     {
             return "<img src='images/ok.gif'>Known File Hosts cleaned<br>\n";
