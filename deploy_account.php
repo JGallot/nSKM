@@ -9,6 +9,7 @@ $smarty->assign("title","Deployment process");
 $id = $_GET['id'];
 $id_account = $_GET['id_account'];
 $id_group = $_GET['id_hostgroup'];
+$clean = $_GET['clean'];
 
 if(!empty($id) and !empty($id_account))
 {
@@ -21,13 +22,28 @@ $smarty->assign("hostname",$hostname);
 $smarty->assign("id",$id);
 $smarty->assign("id_group",$id_group);
 
-$output = prepare_authorizedkey_file($id,$id_account);
+$output='';
 
-$smarty->assign('output1',$output);
-$output = deploy_authorizedkey_file($id,$id_account);
+// Clean Known-hosts if needed
+  if ($clean)
+  {
+      $output.= "Cleaning SKM server Known_hosts File<br>";
+      $output.= ssh_clean_known_hosts_file();
+  }
+list($res_conn,$mess_conn)= test_connection($hostname,$clean);
 
-$smarty->assign('output2',$output);
-
+$output1.=$mess_conn;
+// If connection works go on
+if ($res_conn)
+{
+    $output1= prepare_authorizedkey_file($id,$id_account);
+    $output2= deploy_authorizedkey_file($id,$id_account);
+    $output.=$output1.$output2;
+    
+}
+// Add results to display
+$smarty->assign('output1',$output1);
+$smarty->assign('output2',$output2);
 
 if ($SKM_SEND_MAIL)
 {

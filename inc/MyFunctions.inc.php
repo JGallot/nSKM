@@ -763,18 +763,6 @@ function deploy_authorizedkey_file($id,$id_account){
 
 	$message="";
 
-	// Testing connectivity... 
-	$output = test_connection($hostname);
-	//$output = 0;
-	if ( $output != "OK" )
-	{
-		$message.="<img src='images/error.gif'>Connection failed. Please see output below.<br>Output is $output\n";
-		return $message;
-	} else {
-		$message.="<img src='images/ok.gif'>SSH connection is OK.<br>\n";
-	}
-
-
         // getting homedir of current user
         //$message.="ssh root@$hostname grep $account_name /etc/passwd\n";
         $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
@@ -905,15 +893,24 @@ function display_keyring($id_host,$id_account,$id_keyring,$id_hostgroup,$ident_l
 
 
 // ********************************* TEST CONNECTION *****************************************
-function test_connection($host){
-	$output = shell_exec("ssh ".$GLOBALS['sudousr']."@$host ls -la | grep '^.'");
+function test_connection($host,$accept_pub_key){
+    
+        if ($accept_pub_key) $opts='-oStrictHostKeyChecking=no';
+	$output = shell_exec("ssh $opts ".$GLOBALS['sudousr']."@$host ls -la | grep '^.'");
 	if ( empty($output ))
 	{
-		$output = shell_exec("ssh ".$GLOBALS['sudousr']."@$host ls -la 2>&1");
-		return "$output";
+            $output = shell_exec("ssh $opts".$GLOBALS['sudousr']."@$host ls -la 2>&1");
+            if ( $output != "OK" )
+            {
+                return array(0,"<img src='images/error.gif'>Connection failed. Please see output below.<br>Output is $output<br>\n");
+		
+            } else {
+                return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
+            }
+                
 	} else {
-		return "OK";
-	}
+		return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
+	}       
 }
 
 // ********************************* TEST PRESENCE *****************************************
@@ -990,6 +987,19 @@ function deploy_globalfile($id_file,$id_host){
 		$message.="<img src='images/error.gif'>No global file found with id $id<br>\n";
 	}
 	return $message;
+}
+
+// Clean Known_hosts file
+
+function ssh_clean_known_hosts_file()
+{
+    $output = shell_exec("ssh-keygen -R hostname ; ssh-keygen -R ip");
+    if ( empty($output ))
+    {
+            return "<img src='images/ok.gif'>Known File Hosts cleaned<br>\n";
+    } else {
+            return "<img src='images/error.gif'>$output<br>\n";
+    }
 }
 
 // Get Application version

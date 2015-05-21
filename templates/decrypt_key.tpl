@@ -8,13 +8,17 @@
 
   <table class="login" align='left' width='200px'>
     <tr>
-      <td class='line' colspan='2'>
+      <td colspan='2'>
         <img src='images/encrypted.gif'><br><br>
-        The local SKM SSH Private key is encrypted (if not do it before proceed)<br>
-        Please provide the passphrase :<br>
-        <input type="password" name="psPassword"><br>
+        The local SKM SSH Private key is encrypted (if not do it before proceed)<br><br>
+        Please provide the passphrase : 
+        <input type="password" name="psPassword" size="25"><br>
       </td>
-    </tr><tr>
+    </tr>
+    <tr>
+         <td> Clean known_hosts file ? <input type="checkbox" name="cleanKnownHosts" value="1"></td>
+    </tr>
+    <tr>
       <td class='line' colspan='2'><br><input type="submit" value="Continue"><br></td>
     </tr>
   </table>

@@ -42,3 +42,4 @@ TODO
 * BUG : when deleting user, check if it is used by hosts
 * BUG : don't allow empty group/keyring name
 * FEATURE : add in doc -> create Smarty template cache + install php-mail/php-mail-mime
+* FEATURE : deploy only one line for keys if there are in several keyrings/key in same account

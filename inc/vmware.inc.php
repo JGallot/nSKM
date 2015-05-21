@@ -35,7 +35,7 @@ try
 {
     $request = new stdClass();
     $request->_this = $ret->sessionManager;
-    $request->userName = 'gallotj01';
+    $request->userName = 'YYYYY';
     $request->password = 'XXXXXXX';
     $response = $client->__soapCall('Login', array((array)$request));
 } catch (Exception $e)

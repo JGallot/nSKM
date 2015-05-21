@@ -31,6 +31,7 @@ $smarty->display("decrypt_key.tpl");
 	$id_keyring = $_POST['id_keyring'];
 	$id_key = $_POST['id_key'];
 	$action = $_POST['action'];
+        $clean = $_POST['cleanKnownHosts'];
 
 	// Validating password
 	$sResult = mysql_query( "Select * from `security` where `password` = MD5('$passwd')" ) 
@@ -57,20 +58,20 @@ $smarty->display("decrypt_key.tpl");
         	} else {
 			header("location:decrypt_key.php?action=deploy_account&id=$id&id_account=$id_account&id_hostgroup=$id_hostgroup");
         	}
-
+                
 		switch($action){
 
 		case "deploy_account" :
-			header("location:$action.php?id=$id&id_account=$id_account&id_hostgroup=$id_hostgroup");
+			header("location:$action.php?id=$id&id_account=$id_account&id_hostgroup=$id_hostgroup&clean=$clean");
 			break;
 		case "deploy_keyring" :
-			header("location:$action.php?id_keyring=$id_keyring&id_hostgroup=$id_hostgroup");
+			header("location:$action.php?id_keyring=$id_keyring&id_hostgroup=$id_hostgroup&clean=$clean&step=2");
 			break;
 		case "deploy_key" :
-			header("location:$action.php?id_key=$id_key&id_hostgroup=$id_hostgroup");
+			header("location:$action.php?id_key=$id_key&id_hostgroup=$id_hostgroup&clean=$clean");
 			break;
 		case "host_getinfo" :
-			header("location:$action.php?id=$id&id_hostgroup=$id_hostgroup");
+			header("location:$action.php?id=$id&id_hostgroup=$id_hostgroup&clean=$clean");
 			break;
 		}
 	}

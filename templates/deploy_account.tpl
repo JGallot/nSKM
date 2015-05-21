@@ -3,7 +3,7 @@
 {include file="menu.tpl"}
 <td width='80%'>
 
-
+{if isset($output1)}
 <fieldset><legend>Constructing securities for {$account_name} on host {$hostname}</legend>
 <table class="detail">
   <tr>
@@ -16,7 +16,8 @@
 </table>
 
 </fieldset>
-
+{/if}
+{if isset($output2)}
 <fieldset><legend>Deploying securities for {$account_name} on host {$hostname}</legend>
 
 <table class="detail">
@@ -30,7 +31,7 @@
 </table>
 
 </fieldset>
-
+{/if}
 <a href='host-view.php?id_hostgroup={$id_group}&id={$id}'><img src='images/arrowbright.gif'> Return to {$hostname}</a>
 
 {include file="footer.tpl"}
