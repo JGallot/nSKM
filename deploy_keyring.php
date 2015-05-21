@@ -30,7 +30,7 @@ else
           {
               $smarty->assign('keyring_name',$keyring_name);
 
-              // Afecting values
+              // Affecting values
               $id_host = $row['id_host'];
               $id_account = $row['id_account'];
               $hostname = get_host_name($id_host);

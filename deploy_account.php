@@ -28,7 +28,7 @@ $output='';
   if ($clean)
   {
       $output.= "Cleaning SKM server Known_hosts File<br>";
-      $output.= ssh_clean_known_hosts_file();
+      $output.= ssh_clean_known_hosts_file($hostname,get_host_ip($id));
   }
 list($res_conn,$mess_conn)= test_connection($hostname,$clean);
 
