@@ -1,8 +1,8 @@
 {* Smarty *}
 {include file="header.tpl"}
 {include file="menu.tpl"}
-<script type="text/javascript" src="js/common_functions.js" async></script>
-<script type="text/javascript" src="js/hosts_setup.js" async></script>
+<script type="text/javascript" src="js/common_functions.js"></script>
+<script type="text/javascript" src="js/hosts_setup.js" ></script>
         <td width='80%'>
             <center>
             <form name="setup_host" action="hosts_setup.php" method="post" onsubmit="return check_myform(this);">
@@ -12,15 +12,20 @@
               <tr>
                     <td class="Type" width="40%">Host Name : </td>
                     <td class="Content" width="60%">
-                    <input name="name" size="50" type="text" maxlength="255" value="{$name}" onchange="check_duplicate_host(this.value,'nameHint','check_dup_host.php?q=');">
+                    <input name="name" size="50" type="text" maxlength="255" value="{$name}"
+                           onchange="update_infos(this.value);">
                     <label id="nameHint"></label>
                     </td>
               </tr>
               <tr>
                     <td class="Type" width="40%">Host IP :</td>
                     <td class="Content" width="60%">
-                    <input name="ip" size="50" type="text" maxlength="255" value="{$ip}">
-                    <input name="ns_lookup" type="submit" value="get IP">
+                        <input id="ip" name="ip" size="50" type="text" maxlength="255"
+                               {if isset($ip)}
+                                   {if ({$ip}!="")}
+                                   value="{$ip}"
+                                   {/if}
+                               {/if} >
                     </td>
               </tr>
               <tr>

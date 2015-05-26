@@ -17,4 +17,4 @@ $smarty->assign('SKM_GLPI',$SKM_GLPI);
 $smarty->assign("menu_hostgrps",$hostgroups);
 $smarty->assign("app_version",$app_version);
 
-?> 
+?>
