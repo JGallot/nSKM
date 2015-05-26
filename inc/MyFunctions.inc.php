@@ -233,7 +233,7 @@ function get_all_keyrings($id_host='',$id_account='')
 {
 
 if (($id_host!='')&&($id_account!=''))
-	$req="SELECT * FROM keyrings where id not in (SELECT id_keyring from hak where id_host=$id_host and id_account=$id_account)";
+	$req="SELECT * FROM keyrings where id not in (SELECT id_keyring from hak where id_host=$id_host and id_account=$id_account) ORDER BY `name`";
 else
 	$req="SELECT * FROM `keyrings` ORDER BY `name`";
 
