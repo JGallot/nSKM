@@ -4,6 +4,19 @@
 include_once('config.inc.php'); // Our global configuration file
 include_once('database.inc.php'); // Our database connectivity file
 
+// Check if Hostname is already used
+// // ****************************** DISPLAY GROUP AVAILABLE ****************************************
+function exists_hostname($name){
+    //Display the selection box for the groups
+    $query = "SELECT * FROM `hosts` where `name`='" . $name . "'";
+    $result = mysql_query( $query )
+                             or die (mysql_error()."<br>Couldn't execute query: $query");
+
+    $nr = mysql_num_rows($result);
+    mysql_free_result( $result );
+    return($nr);
+}
+
 // ****************************** DISPLAY GROUP AVAILABLE ****************************************
 function display_available_hosts(){
     //Display the selection box for the groups

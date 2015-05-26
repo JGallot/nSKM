@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 17, 2010 at 09:51 AM
+-- Generation Time: Mar 17, 2010 at 10:05 AM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.4-2ubuntu5.10
 
@@ -12,9 +12,37 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 -- Database: `skm`
 --
+DROP DATABASE IF EXISTS `skm`;
+CREATE DATABASE `skm` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `skm`;
+
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ANSI';
+USE skm ;
+DROP PROCEDURE IF EXISTS skm.drop_user_if_exists ;
+DELIMITER $$
+CREATE PROCEDURE skm.drop_user_if_exists()
+BEGIN
+  DECLARE foo BIGINT DEFAULT 0 ;
+  SELECT COUNT(*)
+  INTO foo
+    FROM mysql.user
+      WHERE User = 'skmadmin' and  Host = 'localhost';
+   IF foo > 0 THEN
+         DROP USER 'skmadmin'@'localhost' ;
+  END IF;
+END ;$$
+DELIMITER ;
+CALL skm.drop_user_if_exists() ;
+DROP PROCEDURE IF EXISTS skm.drop_users_if_exists ;
+SET SQL_MODE=@OLD_SQL_MODE ;
+
+CREATE USER 'skmadmin'@'localhost' IDENTIFIED BY 'demo';
+
+GRANT USAGE ON * . * TO 'skmadmin'@'localhost' IDENTIFIED BY 'demo' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
+
+GRANT ALL PRIVILEGES ON `skm` . * TO 'skmadmin'@'localhost' WITH GRANT OPTION ;
 
 -- --------------------------------------------------------
-use skm;
 
 --
 -- Table structure for table `accounts`
@@ -32,8 +60,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 --
 
 INSERT INTO `accounts` (`id`, `name`) VALUES
-(1, 'root'),
-(126, 'DevAccount1');
+(1, 'root');
 
 -- --------------------------------------------------------
 
@@ -90,10 +117,6 @@ CREATE TABLE IF NOT EXISTS `groups` (
 -- Dumping data for table `groups`
 --
 
-INSERT INTO `groups` (`id`, `name`) VALUES
-(10, 'Production'),
-(11, 'Development'),
-(12, 'Quality Assurance');
 
 -- --------------------------------------------------------
 
@@ -116,13 +139,6 @@ CREATE TABLE IF NOT EXISTS `hak` (
 -- Dumping data for table `hak`
 --
 
-INSERT INTO `hak` (`id_host`, `id_account`, `id_keyring`, `id_key`, `expand`) VALUES
-(319, 1, 88, 0, 'Y'),
-(319, 1, 0, 1, 'N'),
-(320, 1, 0, 1, 'N'),
-(320, 126, 0, 272, 'Y'),
-(321, 1, 0, 1, 'N'),
-(322, 1, 0, 1, 'N');
 
 -- --------------------------------------------------------
 
@@ -175,11 +191,6 @@ CREATE TABLE IF NOT EXISTS `hosts` (
 -- Dumping data for table `hosts`
 --
 
-INSERT INTO `hosts` (`id`, `name`, `ip`, `expand`, `id_group`, `serialno`, `memory`, `osversion`, `cabinet`, `uloc`, `cageno`, `model`, `procno`, `provider`, `install_dt`, `po`, `cost`, `maint_cost`, `maint_provider`, `maint_po`, `maint_end_dt`, `life_end_dt`, `ostype`, `osvers`, `intf1`, `intf2`, `defaultgw`, `monitor`, `selinux`, `datechgroot`, `id_direction`, `pdu_circuit`, `owner`, `tagnum`, `pdu_circuit2`, `pdu_circuit3`) VALUES
-(320, 'DevHost1', '192.168.102.2', 'N', 11, 'BCD5678', '', '', '', '', '', '35', '', '', '0000-00-00', 0, 0.00, 0.00, '', 0, '0000-00-00', '0000-00-00', 'AIX', '5.3', '', '', '', '', '', '0000-00-00', 1, '', '', '', '', ''),
-(319, 'ProdHost1', '192.168.10.2', 'N', 10, 'ABC12345', '2', '', '', '', '', 'MOD123', 'Dual core', 'DELL', '0000-00-00', 0, 0.00, 0.00, '', 0, '0000-00-00', '0000-00-00', 'RHEL', '5.4', '192.168.10.2', '', '', 'Spong', '', '0000-00-00', 1, '', '', '', '', ''),
-(321, 'ProdHost2', '192.168.10.3', 'N', 10, 'CDEF1234', '2', '', '', '', '', 'Sun Fire V100', 'Sparc V4', 'SUN', '0000-00-00', 0, 0.00, 0.00, '', 0, '0000-00-00', '0000-00-00', 'Solaris', '10', '', '', '', 'BigBrother', '', '0000-00-00', 1, '', '', '', '', ''),
-(322, 'ProdHost3', '192.168.10.4', 'N', 10, 'EFGH1234', '4', '', '', '', '', '3550', 'RISC', 'IBM', '0000-00-00', 0, 0.00, 0.00, '', 0, '0000-00-00', '0000-00-00', 'AIX', '5.3', '', '', '', '', '', '0000-00-00', 1, '', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -199,12 +210,6 @@ CREATE TABLE IF NOT EXISTS `hosts-accounts` (
 -- Dumping data for table `hosts-accounts`
 --
 
-INSERT INTO `hosts-accounts` (`id_host`, `id_account`, `expand`) VALUES
-(320, 126, 'Y'),
-(319, 1, 'Y'),
-(320, 1, 'Y'),
-(321, 1, 'N'),
-(322, 1, 'N');
 
 -- --------------------------------------------------------
 
@@ -242,8 +247,6 @@ CREATE TABLE IF NOT EXISTS `keyrings` (
 -- Dumping data for table `keyrings`
 --
 
-INSERT INTO `keyrings` (`id`, `name`, `expand`) VALUES
-(88, 'Administrators', 'Y');
 
 -- --------------------------------------------------------
 
@@ -263,9 +266,6 @@ CREATE TABLE IF NOT EXISTS `keyrings-keys` (
 -- Dumping data for table `keyrings-keys`
 --
 
-INSERT INTO `keyrings-keys` (`id_keyring`, `id_key`, `expand`) VALUES
-(88, 274, 'N'),
-(88, 275, 'N');
 
 -- --------------------------------------------------------
 
@@ -286,10 +286,6 @@ CREATE TABLE IF NOT EXISTS `keys` (
 --
 
 INSERT INTO `keys` (`id`, `name`, `key`) VALUES
-(272, 'user1', 0x7373682d72736120666a6b6473616a666b6c6461736a66647468697369736172616e646f6d6b6579666b646c616a666b646c61736a66646166646b6a61666b6c646a616b6c6664616a6b6c666a6461736b6c666a6461736b6c666a646b616c733b6a66646b61736c3b6a6664207573657231),
-(273, 'user2', 0x7373682d727361206b666a646c736a666b646c61736a666b6c646a616a6b6c746869736973616e6f7468657272616e646f6d6b65796a666b646c736a61666b6c6473616a666b6c6461736a666b6c64736a616b6c666a6b666c676a6b6c66647367687472756968676a6b686e6a666b766473207573657232),
-(274, 'adminuser1', 0x7373682d727361206667646b6c736a6b6c66646a73676b6c66736b6c676a666b6c73766d636e6d762c6e63787569666872756569686a64667368676a6e636d6276666a68647367666a73646c68676a666b646c7368676a747275696c6875696c68736e67666a6b736e766a666e732061646d696e7573657231),
-(275, 'adminuser2', 0x7373682d72736120666a646b736a666a6b6473616e666a6e7564696861666a6e646a6b6e61666a6b6d646e617569666869726a686e676a6b66646e67736a6b766e66646b73766a6b6673646e766a6b66686e736b6e6664736a6b68667569676866736a696b676e666a6b736a6b6673646e6b6a6673642061646d696e7573657232),
 (1, 'skm_default_key', 0x7373682d727361206a666b646a61666c6461666a646b616c666a646b6c616a666b6c64616a666b6c646a616b6c66646a616b6c666e646b6a6e6a6b64666e676a6b666473676a6b6673686a676b6866736a6b6768666a646b7368676a6b667364676a6b66647320736b6d5f64656661756c745f6b6579);
 
 -- --------------------------------------------------------
@@ -326,7 +322,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY  (`email`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `users`
---
+-- --------------------------------------------------------
+-- Table structure for table `config`
+
+CREATE TABLE IF NOT EXISTS `config` (
+`key` varchar(30) character set utf8 collate utf8_unicode_ci NOT NULl,
+`val` varchar(50)aracter set utf8 collate utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB;
 
