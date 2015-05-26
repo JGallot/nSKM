@@ -33,7 +33,6 @@ $output='';
   }
 list($res_conn,$mess_conn)= test_connection($hostname,$clean);
 
-$output1.=$mess_conn;
 // If connection works go on
 if ($res_conn)
 {
@@ -43,7 +42,7 @@ if ($res_conn)
     
 }
 // Add results to display
-$smarty->assign('output1',$output1);
+$smarty->assign('output1',$mess_conn.$output1);
 $smarty->assign('output2',$output2);
 
 if ($SKM_SEND_MAIL)

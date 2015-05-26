@@ -896,21 +896,23 @@ function display_keyring($id_host,$id_account,$id_keyring,$id_hostgroup,$ident_l
 function test_connection($host,$accept_pub_key){
     
         if ($accept_pub_key) $opts='-oStrictHostKeyChecking=no';
-	$output = shell_exec("ssh $opts ".$GLOBALS['sudousr']."@$host ls -la | grep '^.'");
-	if ( empty($output ))
+	//$output = shell_exec("ssh $opts ".$GLOBALS['sudousr']."@$host ls -la| grep '^.'");
+	//if ( empty($output ))
 	{
-            $output = shell_exec("ssh $opts".$GLOBALS['sudousr']."@$host ls -la 2>&1");
-            if ( $output != "OK" )
+            exec("ssh $opts ".$GLOBALS['sudousr']."@$host ls -la 2>&1",$output,$return_val);
+            for ($i=0;$i<count($output);$i++) { $output_final.=$output[$i]."<br>\n"; }
+            
+            if ($return_val!=0)
             {
-                return array(0,"<img src='images/error.gif'>Connection failed. Please see output below.<br>Output is $output<br>\n");
+                return array(0,"<img src='images/error.gif'>Connection failed. Please see output below.<br>Output is $output_final<br>\n");
 		
             } else {
                 return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
             }
                 
-	} else {
+	} /*else {
 		return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
-	}       
+	}   */    
 }
 
 // ********************************* TEST PRESENCE *****************************************
