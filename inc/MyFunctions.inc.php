@@ -308,17 +308,21 @@ function get_host_name($id){
 
 // ****************************** GET HOST IP ****************************************
 function get_host_ip($id){
-    $result = mysql_query( "SELECT `ip` FROM `hosts` WHERE `id` = '$id' " )
+    $result = mysql_query( "SELECT `ip`,`name` FROM `hosts` WHERE `id` = '$id' " )
 		or die (mysql_error()."<br>Couldn't execute query: $query");
 
     $nr = mysql_num_rows($result);
     if(empty($nr)) {
-      echo 'No host found...';
+      return '';
+      //echo 'No host found...';
     }
     else {
       $row = mysql_fetch_array( $result );
       mysql_free_result( $result );
-      return $row['ip'];
+      //return $row['ip'];
+  
+      // Beware IPV4 only....
+      return (gethostbyname($row['name']));
     }
 }
 
