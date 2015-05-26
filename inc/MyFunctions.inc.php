@@ -993,12 +993,19 @@ function deploy_globalfile($id_file,$id_host){
 
 function ssh_clean_known_hosts_file($hostname,$ip)
 {
-    $output = shell_exec("ssh-keygen -q -R $hostname ; ssh-keygen -R $ip 2>&1");
-    if (empty($output ))
-    {
-            return "<img src='images/ok.gif'>Known File Hosts cleaned<br>\n";
+    $output[].="Removing <b>$hostname</b> PubKey from known_hosts";
+    exec("ssh-keygen -q -R $hostname 2>&1",$output,$statut1);
+    
+    $output[].="\n<br>Removing <b>$ip</b> PubKey from known_hosts";
+    exec("ssh-keygen -q -R $ip 2>&1",$output,$statut2);
+    
+    $statut= $statut1+$statut2;
+    for ($i=0;$i<count($output);$i++) { $output_final.=$output[$i]."<br>\n"; }
+    
+    if ($statut==0) {
+        return("<img src='images/ok.gif'>$output_final<br>\n");
     } else {
-            return "<img src='images/error.gif'>$output<br>\n";
+        return("<img src='images/error.gif'>$output_final<br>\n");
     }
 }
 
