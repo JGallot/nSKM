@@ -19,6 +19,10 @@
          <td> Clean known_hosts file ? <input type="checkbox" name="cleanKnownHosts" value="1"></td>
     </tr>
     <tr>
+         <td> Create User if not exists ?<input type="checkbox" name="createUser" value="1"></td>
+    </tr>
+
+    <tr>
       <td class='line' colspan='2'><br><input type="submit" value="Continue"><br></td>
     </tr>
   </table>

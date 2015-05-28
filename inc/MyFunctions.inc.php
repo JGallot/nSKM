@@ -770,86 +770,103 @@ function formatline( $nr1, $nr2, $stat, &$value )  #change to $value if problems
 
 	
 
-function deploy_authorizedkey_file($id,$id_account){
+function deploy_authorizedkey_file($id,$id_account,$create_user=0){
+    // Initialising variables
+    $hostname = get_host_name($id);
+    $hostip = get_host_ip($id);
+    $account_name = get_account_name($id_account);
+    $now = date("Ymd-His");
 
-        // Initialising variables
-        $hostname = get_host_name($id);
-	$hostip = get_host_ip($id);
-        $account_name = get_account_name($id_account);
-        $now = date("Ymd-His");
+    $message="";
 
-	$message="";
+    // Getting homedir of current user
+    $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
 
-        // getting homedir of current user
-        //$message.="ssh root@$hostname grep $account_name /etc/passwd\n";
-        $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
-	//echo ("$output<br>\n");
-        if (!empty($output)){
-                list($field1,$field2,$field3,$field4,$field5,$homedir,$shell) = explode(":",$output);
-		$message.= "<img src='images/ok.gif'>homedir of $account_name on $hostname is $homedir<br>\n";
+    if (empty($output)&&$create_user) {
+            // Account does not exist           
+            // So we want to create user ....
+                exec("ssh ".$GLOBALS['sudousr']."@$hostname \"adduser --quiet --disabled-password --gecos '' $account_name\" 2>&1 ",$create_output,$create_return_val);
+                if ($create_return_val!=0) {
+                    // oups account not created
+                        for ($i=0;$i<count($create_return_val);$i++) { $output_final.=$create_return_val[$i]."<br>\n"; }
+                        $message.="<img src='images/error.gif'>Can 't create user $account_name on $hostname<br>\n$output_final";
+                } else {
+                    // Account was created
+                    // Getting again homedir of current user (it's better to test again)
+                    $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
+                    
+                    $message.="<img src='images/ok.gif'>Account $account_name on $hostname created<br>\n";
+                    
+                    exec("ssh ".$GLOBALS['sudousr']."@$hostname \"mkdir ~$account_name/.ssh ;chmod 700 ~$account_name/.ssh; chown $account_name:$account_name ~$account_name/.ssh \" 2>&1",$ssh_dir_output,$ssh_dir_val);
+                    if (!empty($ssh_dir_output)) {
+                        for ($i=0;$i<count($ssh_dir_output);$i++) { $output_final2.=$ssh_dir_output[$i]."<br>\n"; }
+                        $message.="<img src='images/error.gif'>Can 't create .ssh directory for $account_name on $hostname<br>\n$output_final2";
+                    } else {
+                        $message.= "<img src='images/ok.gif'>.ssh Directory created for $account_name on $hostname<br>\n";
+                    }
+                    
+               }
+    } elseif (empty($output) ){
+        $message.= "<img src='images/error.gif'>User $account_name not found on $hostname<br>\n";
+    }
+    if (!empty($output)){
 
-		// Testing presence of file
-		// Uncomment for IP if ( test_presence($hostip,"$homedir/.ssh/authorized_keys") == 1 )
-		if ( test_presence($hostname,"$homedir/.ssh/authorized_keys") == 1 )
-		{
-			$message.="<img src='images/warning.gif'>$homedir/.ssh/authorized_keys was not found...<br>\n";
-		} else {
-                	// Archiving destination file
-                	// Uncomment for IP : $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostip cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
-                	$output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
-                	if (empty($output)){
-                        	//everything was fine
-                        	$message .= "<img src='images/ok.gif'>authorized_keys has been archived successfully to $homedir/.ssh/authorized_keys.$now<br>\n";
-			} else {
-                        	$message .= "<img src='images/error.gif'>authorized_keys could NOT be archived to $homedir/.ssh/authorized_keys.$now<br>\n";
-				return $message;
-			}
-			// Uncomment for IP $output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostip:/$homedir/.ssh/authorized_keys /tmp/aut2.txt 2>&1");
-			$output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostname:/$homedir/.ssh/authorized_keys /tmp/aut2.txt 2>&1");
-                	if (!empty($output)){
-                        	//everything was fine
-                        	$message .= "<img src='images/error.gif'>authorized_keys could not be copied locally ($output). The diff test might not be valid.<br>\n";
-			}
-			$output = shell_exec("chmod 740 /tmp/aut2.txt 2>&1");
-                	if (!empty($output)){
-                        	//everything was fine
-                        	$message .= "<img src='images/error.gif'>authorized_keys could not chg perm on /tmp/aut2.txt ($output). The diff test might not be valid.<br>\n";
-			}
-		}
+            // There's an answer, let's go
+            list($field1,$field2,$field3,$field4,$field5,$homedir,$shell) = explode(":",$output);
+            $message.= "<img src='images/ok.gif'>homedir of $account_name on $hostname is $homedir<br>\n";
 
-                // Uncomment for IP $output = shell_exec("scp /tmp/authorized_keys root@$hostip:$homedir/.ssh/authorized_keys 2>&1");
-                $output = shell_exec("scp /tmp/authorized_keys ".$GLOBALS['sudousr']."@$hostname:$homedir/.ssh/authorized_keys 2>&1");
-                if (empty($output)){
-                	//everything is fine
-                        $message .= "<img src='images/ok.gif'>File authorized_keys has been pushed successfully to $hostname for account $account_name<br>\n";
-			//comparing number of keys
-			$differences = "";
-			#$differences = shell_exec("diff --ignore-blank-lines -u /tmp/aut2.txt /tmp/authorized_keys2 | grep -v ^--- | grep -v ^+++  | sed 's/^-/<img src=images\/add.gif> /g' | sed 's/^+/<img src=images\/error.gif> /g' | sed 's/$/<br>/g'");
-			$differences = shell_exec("diff --ignore-blank-lines -u /tmp/aut2.txt /tmp/authorized_keys2 | grep -v ^--- | grep -v ^+++  | sed 's/^-/<P class=delete> /g' | sed 's/^+/<P class=add> /g' | sed 's/^ ssh-rsa/<p > /g' | sed 's/$/<\/P>/g'");
-			if ( empty($differences)){
-				$message .= "<br>Files are identicals<br>\n";
-			} else {
-				$message .= "<br>File comparison output :<br>\n";
-				$message .= "<br>Legende :<br>";
-				$message .= "<p class=add> Key(s) added<br><p class=delete> Key(s) deleted</p><br>";
-				$message .= $differences;
-			}
+            // Testing presence of file
+            // Uncomment for IP if ( test_presence($hostip,"$homedir/.ssh/authorized_keys") == 1 )
+            if ( test_presence($hostname,"$homedir/.ssh/authorized_keys") == 1 )
+            {
+                    $message.="<img src='images/warning.gif'>$homedir/.ssh/authorized_keys was not found...<br>\n";
+            } else {
+                    // Archiving destination file
+                    // Uncomment for IP : $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostip cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
+                    $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
+                    if (empty($output)){
+                            //everything was fine
+                            $message .= "<img src='images/ok.gif'>authorized_keys has been archived successfully to $homedir/.ssh/authorized_keys.$now<br>\n";
+                    } else {
+                            $message .= "<img src='images/error.gif'>authorized_keys could NOT be archived to $homedir/.ssh/authorized_keys.$now<br>\n";
+                            return $message;
+                    }
+                    // Uncomment for IP $output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostip:/$homedir/.ssh/authorized_keys /tmp/aut2.txt 2>&1");
+                    $output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostname:/$homedir/.ssh/authorized_keys /tmp/aut2.txt 2>&1");
+                    if (!empty($output)){
+                            //everything was fine
+                            $message .= "<img src='images/error.gif'>authorized_keys could not be copied locally ($output). The diff test might not be valid.<br>\n";
+                    }
+                    $output = shell_exec("chmod 740 /tmp/aut2.txt 2>&1");
+                    if (!empty($output)){
+                            //everything was fine
+                            $message .= "<img src='images/error.gif'>authorized_keys could not chg perm on /tmp/aut2.txt ($output). The diff test might not be valid.<br>\n";
+                    }
+            }
 
-
-
-		
-                 } else {
-                        $message .= "<img src='images/error.gif'>An error occured while pushing file authorized_keys to $hostname for account $account_name\n$output"."<br>\n";
-                 }
-        } else {
-		// Account does not exist
-                $message.= "<img src='images/error.gif'>User $account_name not found on $hostname<br>\n$message";
-
-		
-        }
-
-	$message.="</fieldset><br>\n";
-	return $message;
+            // Uncomment for IP $output = shell_exec("scp /tmp/authorized_keys root@$hostip:$homedir/.ssh/authorized_keys 2>&1");
+            $output = shell_exec("scp /tmp/authorized_keys ".$GLOBALS['sudousr']."@$hostname:$homedir/.ssh/authorized_keys 2>&1");
+            if (empty($output)){
+                    //everything is fine
+                    $message .= "<img src='images/ok.gif'>File authorized_keys has been pushed successfully to $hostname for account $account_name<br>\n";
+                    //comparing number of keys
+                    $differences = "";
+                    #$differences = shell_exec("diff --ignore-blank-lines -u /tmp/aut2.txt /tmp/authorized_keys2 | grep -v ^--- | grep -v ^+++  | sed 's/^-/<img src=images\/add.gif> /g' | sed 's/^+/<img src=images\/error.gif> /g' | sed 's/$/<br>/g'");
+                    $differences = shell_exec("diff --ignore-blank-lines -u /tmp/aut2.txt /tmp/authorized_keys2 | grep -v ^--- | grep -v ^+++  | sed 's/^-/<P class=delete> /g' | sed 's/^+/<P class=add> /g' | sed 's/^ ssh-rsa/<p > /g' | sed 's/$/<\/P>/g'");
+                    if ( empty($differences)){
+                            $message .= "<br>Files are identicals<br>\n";
+                    } else {
+                            $message .= "<br>File comparison output :<br>\n";
+                            $message .= "<br>Legende :<br>";
+                            $message .= "<p class=add> Key(s) added<br><p class=delete> Key(s) deleted</p><br>";
+                            $message .= $differences;
+                    }
+             } else {
+                    $message .= "<img src='images/error.gif'>An error occured while pushing file authorized_keys to $hostname for account $account_name\n$output"."<br>\n";
+             }
+    } 
+    $message.="</fieldset><br>\n";
+    return $message;
 } 
 
 function display_key($id_host,$id_account,$id_key,$id_hostgroup,$ident_level){

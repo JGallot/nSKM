@@ -13,6 +13,7 @@ if (isset($_POST['step'])) {$step = $_POST["step"];} else {$step = "";}
 if (isset($_GET['step'])) {$step2 = $_GET["step"];} else {$step2 = "";}
 
 if (isset($_GET['clean'])) {$clean = $_GET['clean'];} else {$clean = "";}
+if (isset($_GET['create_user'])) $create_user=$_GET['create_user']; else $create_user='';
 
 if (empty($id_keyring))
 {
@@ -59,7 +60,7 @@ else
                     $output1=prepare_authorizedkey_file($id_host,$id_account);
                     $hosts[$id_host]['accounts'][$id_account]['result1']=$mess_conn.$output1;
                     
-                    $output2= deploy_authorizedkey_file($id_host,$id_account);
+                    $output2= deploy_authorizedkey_file($id_host,$id_account,$create_user);
                     $hosts[$id_host]['accounts'][$id_account]['result2']=$output2;
                 } else {
                     $hosts[$id_host]['accounts'][$id_account]['result1']=$mess_conn.$output1;

@@ -11,6 +11,8 @@ if (isset($_GET["id_keyring"])) $id_keyring = $_GET["id_keyring"]; else $id_keyr
 if (isset($_GET["id_key"])) $id_key = $_GET["id_key"]; else $id_key = "";
 if (isset($_GET["id_hostgroup"])) $id_hostgroup = $_GET["id_hostgroup"]; else $id_hostgroup = "";
 if (isset($_POST["step"])) $step = $_POST["step"]; else $step = "";
+if (isset($_POST["createUser"])) $create_user = $_POST["createUser"]; else $create_user = "";
+
 
 if ( empty( $step ) )
 {
@@ -62,13 +64,13 @@ $smarty->display("decrypt_key.tpl");
 		switch($action){
 
 		case "deploy_account" :
-			header("location:$action.php?id=$id&id_account=$id_account&id_hostgroup=$id_hostgroup&clean=$clean");
+			header("location:$action.php?id=$id&id_account=$id_account&id_hostgroup=$id_hostgroup&clean=$clean&create_user=$create_user");
 			break;
 		case "deploy_keyring" :
-			header("location:$action.php?id_keyring=$id_keyring&id_hostgroup=$id_hostgroup&clean=$clean&step=2");
+			header("location:$action.php?id_keyring=$id_keyring&id_hostgroup=$id_hostgroup&clean=$clean&step=2&create_user=$create_user");
 			break;
 		case "deploy_key" :
-			header("location:$action.php?id_key=$id_key&id_hostgroup=$id_hostgroup&clean=$clean");
+			header("location:$action.php?id_key=$id_key&id_hostgroup=$id_hostgroup&clean=$clean&create_user=$create_user");
 			break;
 		case "host_getinfo" :
 			header("location:$action.php?id=$id&id_hostgroup=$id_hostgroup&clean=$clean");

@@ -10,6 +10,7 @@ $id = $_GET['id'];
 $id_account = $_GET['id_account'];
 $id_group = $_GET['id_hostgroup'];
 $clean = $_GET['clean'];
+$create_user=$_GET['create_user'];
 
 if(!empty($id) and !empty($id_account))
 {
@@ -37,7 +38,7 @@ list($res_conn,$mess_conn)= test_connection($hostname,$clean);
 if ($res_conn)
 {
     $output1= prepare_authorizedkey_file($id,$id_account);
-    $output2= deploy_authorizedkey_file($id,$id_account);
+    $output2= deploy_authorizedkey_file($id,$id_account,$create_user);
     $output.=$output1.$output2;
     
 }
