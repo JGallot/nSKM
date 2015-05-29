@@ -17,6 +17,19 @@ function exists_hostname($name){
     return($nr);
 }
 
+// Check if Hostgroup is already used
+// // ****************************** DISPLAY GROUP AVAILABLE ****************************************
+function exists_hostgroup($name){
+    //Display the selection box for the groups
+    $query = "SELECT * FROM `groups` where `name`='" . $name . "'";
+    $result = mysql_query( $query )
+                             or die (mysql_error()."<br>Couldn't execute query: $query");
+
+    $nr = mysql_num_rows($result);
+    mysql_free_result( $result );
+    return($nr);
+}
+
 // ****************************** DISPLAY GROUP AVAILABLE ****************************************
 function display_available_hosts(){
     //Display the selection box for the groups
