@@ -25,5 +25,4 @@
       </center>
     </form>
     </center>
-<a href='deploy-keyring.php'><img src='images/arrowbright.gif'> Return to Re-deploy Keyrings</a>
 {include file="footer.tpl"}
