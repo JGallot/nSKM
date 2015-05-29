@@ -94,6 +94,8 @@ if (!empty($hostgroup_nr)) {
 	return ($hostgroup_ar);
 
 }
+
+
 function get_group_name($id_hostgroup){
 
     //Display the selection box for the groups
@@ -336,6 +338,30 @@ function get_host_ip($id){
   
       // Beware IPV4 only....
       return (gethostbyname($row['name']));
+    }
+}
+
+// ****************************** GET ALL HOSTS INFORMATION ****************************************
+function get_all_hosts(){
+    $result = mysql_query( "SELECT *  FROM `hosts` ORDER BY `name` " )
+		or die (mysql_error()."<br>Couldn't execute query: $query");
+
+    $nb=0;
+    $nr = mysql_num_rows($result);
+    if(empty($nr)) {
+      return(array());
+    } else {
+        while( $row = mysql_fetch_array($result))
+        {
+          $id=$row['id'];
+          $hosts [$id]['name'] = $row['name'];
+          $hosts [$id]['ip'] = $row['ip'];
+          $hosts [$id]['icon'] = $row['icon'];
+          $hosts [$id]['serialno'] = $row['serialno'];
+
+        }
+        mysql_free_result( $result );
+        return ($hosts);
     }
 }
 
@@ -1055,5 +1081,131 @@ function get_version()
 	$val=$row["val"];
 	mysql_free_result( $result );
 	return($val);
+}
+function recursive_array_search($needle,$haystack) {
+    foreach($haystack as $key=>$value) {
+        $current_key=$key;
+        if($needle===$value OR (is_array($value) && recursive_array_search($needle,$value) !== false)) {
+            //return $current_key;
+            return true;
+        }
     }
+    return false;
+}
+  
+// Must be implemented
+function delete_account()
+{
+    
+}
+// Delete all accounts of a host
+// -----------------------------
+// Input :
+//      - Id of host
+// Output :
+//      - null if accounts are deleted
+//      - error string if error
+
+function delete_host_accounts($id_host)
+{
+    $result = mysql_query( "DELETE FROM `hosts-accounts` WHERE `id_host`='$id_host';" );
+    if (!isset($result)) {
+        $err=mysql_error();
+        mysql_free_result($result);
+        return($err);
+    }
+}
+// Delete all keys/keyring/account association of a host
+// -----------------------------
+// Input :
+//      - Id of host
+// Output :
+//      - null if deletion worked
+//      - error string if deletion failed
+function delete_host_keys_keyrings($id_host)
+{
+    $result = mysql_query( "DELETE FROM `hak` WHERE `id_host`='$id_host';" );
+    if (!isset($result)) {
+        $err=mysql_error();
+        mysql_free_result($result);
+        return($err);
+    }
+}
+// Delete a host
+// -----------------------------
+// Input :
+//      - Id of host
+// Output :
+//      - null if deletion worked
+//      - error string if deletion failed
+function delete_host($id_host)
+{
+    // First delete accounts
+    $res_del_a=delete_host_accounts($id_host);
+    if ($res_del_a) {
+        // Oups deletion is not completed !
+        return($res_del_a);
+    }
+    // Accounts are deleted so delete keys/keyrings account association for this host
+    $res_del_k=delete_host_keys_keyrings($id_host);
+    if ($res_del_k) {
+        // Oups deletion is not completed !
+        return($res_del_k);
+    }
+    // So accounts and keys association are deleted, we can delete host
+     $result = mysql_query( "DELETE FROM `hosts` WHERE `id`='$id_host';" );
+    if (!$result) {
+        $err=mysql_error();
+        echo "--".mysql_error()."--";
+        mysql_free_result($result);
+        return($err);
+    }
+    // If job is completed, NULL is send
+}
+// ADD a host
+// -----------------------------
+// Input :
+//      - too much elements
+// Output :
+//      - null if deletion worked
+//      - error string if deletion failed
+function add_host($hostname,$ip='',$id_group='',$serialno='',$memory='',$osversion='',
+        $cabinet='',$uloc='',$cageno='',$model='',$procno='',$provider='',$install_dt,$po='',$cost='',
+        $maint_cost='',$maint_po='',$maint_provider='',$maint_end_dt='',$life_end_dt='',$ostype='',
+        $osvers='',$intf1='',$intf2='',$defaultgw='',$monitor='',$selinux='',$datechgroot='')
+{
+      $result = mysql_query( "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,"
+              . "`uloc`,`cageno`,`model`,`procno`,`provider`,`install_dt`,`po`,`cost`,`maint_cost`,`maint_po`,"
+              . "`maint_provider`,`maint_end_dt`,`life_end_dt`,`ostype`,`osvers`,`intf1`,`intf2`,`defaultgw`,"
+              . "`monitor`,`selinux`,`datechgroot`) "
+              . "VALUES('$hostname','$ip','$group','$serialno','$memory','$osversion','$cabinet','$uloc',"
+              . "'$cageno','$model','$procno','$provider','$install_dt','$po','$cost','$maint_cost',"
+              . "'$maint_po','$maint_provider','$maint_end_dt','$life_end_dt','$ostype','$osvers',"
+              . "'$intf1','$intf2','$defaultgw','$monitor','$selinux','$datechgroot')" );
+ 
+    if (!$result) {
+        $err=mysql_error();
+        echo "--".mysql_error()."--";
+        mysql_free_result($result);
+        return($err);
+     }
+    $id = mysql_insert_id();
+
+    // add account root (id 1) to created host
+    $result = mysql_query("INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('$id','1')");
+   if (!$result) {
+        $err=mysql_error();
+        echo "--".mysql_error()."--";
+        mysql_free_result($result);
+        return($err);
+     }
+    // add SKM Public Key (id 1) for user root on created host
+    $result = mysql_query("INSERT INTO `hak` (`id_host`,`id_account`,`id_key`) VALUES ('$id','1','1')");
+    if (!$result) {
+        $err=mysql_error();
+        echo "--".mysql_error()."--";
+        mysql_free_result($result);
+        return($err);
+     }   
+}
 ?>

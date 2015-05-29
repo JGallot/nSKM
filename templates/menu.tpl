@@ -10,6 +10,10 @@
       <fieldset><legend>Hosts Management</legend>
         <a href='hosts_setup.php'>Add new host</a><br>
         <a href='groups.php'>Add new group</a><br>
+        {if isset($SKM_REPO_URL)} {if $SKM_REPO_URL}
+             </br>
+             <a href="hosts_sync.php"><img src='images/sync.png' >&nbsp;Synchronize Hosts</a><br>
+        {/if}{/if}
       </fieldset>
       <fieldset><legend>Host Groups</legend>
         <a href='show_all_hosts.php'>All Hosts</a><br>

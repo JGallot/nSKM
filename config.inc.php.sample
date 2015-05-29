@@ -1,35 +1,49 @@
 <?php
- // mysql connection data
- //  default: localhost
- $mysql_host = "localhost";
- //  default: skmadmin
- $mysql_user = "skmadmin";
- //  default: demo
- $mysql_pass = "demo";
- //  default: skm
- $mysql_db = "skm";
- 
- // home directory of the webserver user, containing .ssh directory etc.
- // no trailing slash required
- // example: $home_of_webserver_account = "/var/www";
- $home_of_webserver_account = "/var/empty";
- $gpgbin = "/usr/bin/gpg";
- $admin_email = "youremail@yourdomain.com";
+// mysql connection data
+//  default: localhost
+$mysql_host = "localhost";
+//  default: skmadmin
+$mysql_user = "skmadmin";
+//  default: demo
+$mysql_pass = "demo";
+//  default: skm
+$mysql_db = "skm";
 
- // Configuration for ssh connection
- // sudouser is the name of the remote unix account used to manage ssh keys.
- $sudousr = "root";
+// home directory of the webserver user, containing .ssh directory etc.
+// no trailing slash required
+// example: $home_of_webserver_account = "/var/www";
+$home_of_webserver_account = "/var/empty";
+$gpgbin = "/usr/bin/gpg";
+$admin_email = "youremail@yourdomain.com";
 
- // Send mail while deploying ? (0=no send / 1=send)
- $SKM_SEND_MAIL = 1;
+// Configuration for ssh connection
+// sudouser is the name of the remote unix account used to manage ssh keys.
+$sudousr = "badboy";
 
- // Default Message adding at the top of authorized_keys
- $SKM_AUTH_MSG="######### Do not modify, modifications will be erased ##########";
+// Send mail while deploying ? (0=no send / 1=send)
+$SKM_SEND_MAIL = 1;
 
- // GLPI STyle information ?
- $SKM_GLPI=0;
+// Default Message adding at the top of authorized_keys
+$SKM_AUTH_MSG="######### Do not modify, modifications will be erased ##########";
 
- // Number of results by page
- $SKM_NB_RESULTS_PER_PAGES=20;
+// GLPI STyle information ?
+$SKM_GLPI=0;
+
+// Number of results by page
+$SKM_NB_RESULTS_PER_PAGES=20;
+
+// Activate synchronization of hosts 
+// 
+// SKM_REPO_URL is actually foreman URL (without /api)
+// Must be empty if you don't use this functionnality
+$SKM_REPO_URL='http://myforeman.mydomain.com';
+// Foreman user of repository
+$SKM_REPO_USER='XXXXXXXX';
+// Password of repository
+$SKM_REPO_PASS='YYYYYYYY';
+
+// Type of repository (1=FOREMAN/2=VMWARE)
+// Not used already
+$SKM_REPO_TYPE=1;
 
 ?>

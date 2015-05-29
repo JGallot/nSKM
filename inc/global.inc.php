@@ -14,6 +14,7 @@ $smarty->config_dir = 'configs/';
 $smarty->cache_dir = 'cache/';
 
 $smarty->assign('SKM_GLPI',$SKM_GLPI);
+$smarty->assign('SKM_REPO_URL',$SKM_REPO_URL);
 $smarty->assign("menu_hostgrps",$hostgroups);
 $smarty->assign("app_version",$app_version);
 
