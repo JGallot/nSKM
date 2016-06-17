@@ -11,7 +11,7 @@
 	{foreach from=$keys key=idx item=key}
 	<tr wdth='100%'>
 	<td width='90%' class='detail1'><img src='images/key_little.gif' border=0'>{$key}
-	[ <a href='keys_setup.php?id={$idx}'>Edit name</a>
+	[ <a href='keys_setup.php?id={$idx}'>Edit</a>
         {if ($idx > 1)}
           | <a href='keys.php?id={$idx}&action=delete'>Delete</a> ]</td>
         {else}
