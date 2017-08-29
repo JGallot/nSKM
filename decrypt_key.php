@@ -36,7 +36,7 @@ $smarty->display("decrypt_key.tpl");
         $clean = $_POST['cleanKnownHosts'];
 
 	// Validating password
-	$sResult = mysql_query( "Select * from `security` where `password` = MD5('$passwd')" ) 
+	$sResult = mysql_query( "Select id from `security` where `password` = MD5('$passwd')" ) 
 		or die (mysql_error()."<br>Couldn't execute query: $query");
 	$sNumRow = mysql_num_rows( $sResult );
 
@@ -48,8 +48,8 @@ $smarty->display("decrypt_key.tpl");
 		// we encrypt the file with gpg --encrypt $home_of_webserver_account/.ssh/id_rsa and we select user Apache
 
 		// We decrypt the key
-		$output = shell_exec("echo \"$passwd\" | ".$gpgbin." -v --batch --homedir ".$home_of_webserver_account."/.gnupg -u Apache -o ".$home_of_webserver_account."/.ssh/id_rsa --passphrase-fd 0 --decrypt ".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
-		// we change permission on the file
+		$output = shell_exec("echo \"$passwd\" | ".$gpg_bin." -v --batch --homedir ".$home_of_webserver_account."/.gnupg -u $gpg_user -o ".$home_of_webserver_account."/.ssh/id_rsa --passphrase-fd 0 --decrypt ".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
+// we change permission on the file
 		$output .= shell_exec("chmod 600 ".$home_of_webserver_account."/.ssh/id_rsa");
 	
 	        $pos = strstr($output,'failed');

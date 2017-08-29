@@ -25,7 +25,10 @@ $mysql_db = "skm";
 $home_of_webserver_account = "/var/empty";
 
 // gpg tool fullpath
-$gpgbin = "/usr/bin/gpg";
+$gpg_bin = "/usr/bin/gpg";
+
+// Gpg User name
+$gpg_user = "Apache-skm"
 
 ///////////////////////////////////////////////////
 // Mail
