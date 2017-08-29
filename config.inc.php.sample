@@ -1,27 +1,45 @@
 <?php
-// mysql connection data
-//  default: localhost
+
+///////////////////////////////////////////////////
+// MySQL configuration
+///////////////////////////////////////////////////
+// Host
 $mysql_host = "localhost";
-//  default: skmadmin
+
+// Port
+$mysql_port = "3306";
+
+// User
 $mysql_user = "skmadmin";
-//  default: demo
+
+// User password
 $mysql_pass = "demo";
-//  default: skm
+
+// Database
 $mysql_db = "skm";
 
+///////////////////////////////////////////////////
 // home directory of the webserver user, containing .ssh directory etc.
 // no trailing slash required
 // example: $home_of_webserver_account = "/var/www";
 $home_of_webserver_account = "/var/empty";
+
+// gpg tool fullpath
 $gpgbin = "/usr/bin/gpg";
+
+///////////////////////////////////////////////////
+// Mail
+///////////////////////////////////////////////////
+// Send mail while deploying ? (0=no send / 1=send)
+$SKM_SEND_MAIL = 1;
+
+// Mail of people who will receive deployement results
 $admin_email = "youremail@yourdomain.com";
 
+///////////////////////////////////////////////////
 // Configuration for ssh connection
 // sudouser is the name of the remote unix account used to manage ssh keys.
 $sudousr = "badboy";
-
-// Send mail while deploying ? (0=no send / 1=send)
-$SKM_SEND_MAIL = 1;
 
 // Default Message adding at the top of authorized_keys
 $SKM_AUTH_MSG="######### Do not modify, modifications will be erased ##########";
@@ -32,8 +50,13 @@ $SKM_GLPI=0;
 // Number of results by page
 $SKM_NB_RESULTS_PER_PAGES=20;
 
-// Activate synchronization of hosts 
-// 
+///////////////////////////////////////////////////
+// Hosts Synchronization
+///////////////////////////////////////////////////
+// Type of repository (1=FOREMAN/2=VMWARE/0=Disable synchronization)
+// Only foreman works
+$SKM_REPO_TYPE=0;
+
 // SKM_REPO_URL is actually foreman URL (without /api)
 // Must be empty if you don't use this functionnality
 $SKM_REPO_URL='http://myforeman.mydomain.com';
@@ -41,9 +64,5 @@ $SKM_REPO_URL='http://myforeman.mydomain.com';
 $SKM_REPO_USER='XXXXXXXX';
 // Password of repository
 $SKM_REPO_PASS='YYYYYYYY';
-
-// Type of repository (1=FOREMAN/2=VMWARE)
-// Not used already
-$SKM_REPO_TYPE=1;
 
 ?>
