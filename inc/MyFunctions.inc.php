@@ -1,6 +1,5 @@
 <?php
 
-
 include_once('config.inc.php'); // Our global configuration file
 include_once('database.inc.php'); // Our database connectivity file
 
@@ -89,23 +88,24 @@ function display_available_groups($id_hostgroup){
 
 function get_all_hostgroups()
 {
-$hostgroup=mysql_query( "SELECT * FROM `groups` ORDER BY `name`" )
-                        or die (mysql_error()."<br>Couldn't execute query: $query");
+    $hostgroup_ar=array();
+    
+    $hostgroup=mysql_query( "SELECT * FROM `groups` ORDER BY `name`" )
+                            or die (mysql_error()."<br>Couldn't execute query: $query");
 
-$hostgroup_nr = mysql_num_rows( $hostgroup );
-if (!empty($hostgroup_nr)) {
-              while( $hostgroup_row = mysql_fetch_array( $hostgroup ))
-              {
-                        // Afecting values
-                        $name = $hostgroup_row["name"];
-                        $id_hostgroup = $hostgroup_row["id"];
+    $hostgroup_nr = mysql_num_rows( $hostgroup );
+    if (!empty($hostgroup_nr)) {
+        while( $hostgroup_row = mysql_fetch_array( $hostgroup ))
+        {
+                  // Afecting values
+                  $name = $hostgroup_row["name"];
+                  $id_hostgroup = $hostgroup_row["id"];
 
-                        $hostgroup_ar[$id_hostgroup]=$name;
-                }
-                mysql_free_result( $hostgroup );
-        }
-	return ($hostgroup_ar);
-
+                  $hostgroup_ar[$id_hostgroup]=$name;
+          }
+          mysql_free_result( $hostgroup );
+    }
+    return ($hostgroup_ar);
 }
 
 
@@ -354,6 +354,22 @@ function get_host_ip($id){
     }
 }
 
+// ****************************** GET HOST SSH PORT ****************************************
+function get_host_ssh_port($id){
+    $result = mysql_query( "SELECT `ssh_port`,`name` FROM `hosts` WHERE `id` = '$id' " )
+		or die (mysql_error()."<br>Couldn't execute query: $query");
+
+    $nr = mysql_num_rows($result);
+    if(empty($nr)) {
+      return 22;
+    }
+    else {
+      $row = mysql_fetch_array( $result );
+      mysql_free_result( $result );
+      return $row['ssh_port'];
+    }
+}
+
 // ****************************** GET ALL HOSTS INFORMATION ****************************************
 function get_all_hosts(){
     $result = mysql_query( "SELECT *  FROM `hosts` ORDER BY `name` " )
@@ -396,7 +412,7 @@ function get_gfile_name($id){
 
 // ********************************* DISPLAY MENY *****************************************
 
-function prepare_authorizedkey_file($id,$id_account){
+function prepare_authorizedkey_file($id,$id_account,$id_run){
     
 	global $SKM_AUTH_MSG;
         // Initialising variables
@@ -409,84 +425,84 @@ function prepare_authorizedkey_file($id,$id_account){
 	// Add default message;
 	$authorized_keys="$SKM_AUTH_MSG\n";
 
-		// -----------------------------------------------
-	        // We get all keys associated with current keyring
-		// -----------------------------------------------
-                $keyrings = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
-                                          and `id_keyring` != '0'" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
-                $nr_keyrings = mysql_num_rows( $keyrings );
-                if(!empty($nr_keyrings)) {
-                        while ( $keyringrow = mysql_fetch_array($keyrings))
-                        {
-                                $id_keyring = $keyringrow['id_keyring'];
-                                $name_keyring = get_keyring_name($id_keyring);
-                                //$message.="Deploying keyring $name_keyring with id $id_keyring<br>\n";
+        // -----------------------------------------------
+        // We get all keys associated with current keyring/account
+        // -----------------------------------------------
+        $keyrings = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
+                                  and `id_keyring` != '0'" )
+                 or die (mysql_error()."<br>Couldn't execute query: $query");
+        $nr_keyrings = mysql_num_rows( $keyrings );
+        if(!empty($nr_keyrings)) {
+                while ( $keyringrow = mysql_fetch_array($keyrings))
+                {
+                        $id_keyring = $keyringrow['id_keyring'];
+                        $name_keyring = get_keyring_name($id_keyring);
+                        //$message.="Deploying keyring $name_keyring with id $id_keyring<br>\n";
 
-                                // Getting the keys associated to current keyring
-                                //echo("Select from keyrings-keys id_keyring=$id_keyring\n");
-                                $keys = mysql_query( "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
-                                        or die (mysql_error()."<br>Couldn't execute query: $query");
-                                $nr_keys = mysql_num_rows( $keys );
-                                if (!empty($nr_keys)) {
-                                        while ( $keyrow = mysql_fetch_array($keys))
-                                        {
-                                                $key_id = $keyrow['id_key'];
-                                                $key_name = get_key_name($key_id);
-                                                $message.="  <img src='images/ok.gif'>adding key $key_name (id $key_id)<br>\n";
+                        // Getting the keys associated to current keyring
+                        //echo("Select from keyrings-keys id_keyring=$id_keyring\n");
+                        $keys = mysql_query( "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
+                                or die (mysql_error()."<br>Couldn't execute query: $query");
+                        $nr_keys = mysql_num_rows( $keys );
+                        if (!empty($nr_keys)) {
+                            while ( $keyrow = mysql_fetch_array($keys))
+                            {
+                                    $key_id = $keyrow['id_key'];
+                                    $key_name = get_key_name($key_id);
+                                    $message.="  <img src='images/ok.gif'>adding key $key_name (id $key_id)<br>\n";
 
 
-                                                // Getting key value of current key
-                                                $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
-                                                        or die (mysql_error()."<br>Couldn't execute query: $query");
-                                                $nr_keyvalue = mysql_num_rows( $keyvalue );
-                                                if (!empty($nr_keyvalue)) {
-                                                        while ($keyvaluerow  = mysql_fetch_array($keyvalue))
-                                                        {
-                                                                $singlekey = trim($keyvaluerow['key']);
-                                                                $authorized_keys.= "$singlekey\n";
-                                                        }
-                                                } // end if
-                                        } // end while keyrow
-                                        mysql_free_result($keys);
-                                } //end if
-                        } // end while keyringrow
-                        mysql_free_result($keyrings);
-                } // end if
+                                    // Getting key value of current key
+                                    $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
+                                            or die (mysql_error()."<br>Couldn't execute query: $query");
+                                    $nr_keyvalue = mysql_num_rows( $keyvalue );
+                                    if (!empty($nr_keyvalue)) {
+                                            while ($keyvaluerow  = mysql_fetch_array($keyvalue))
+                                            {
+                                                    $singlekey = trim($keyvaluerow['key']);
+                                                    $authorized_keys.= "$singlekey\n";
+                                            }
+                                    } // end if
+                            } // end while keyrow
+                            mysql_free_result($keys);
+                        } //end if
+                } // end while keyringrow
+                mysql_free_result($keyrings);
+        } // end if
 
-		// -----------------------------------------------
-	        // We get all keys associated with current account/host
-		// -----------------------------------------------
-                $keys = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
-                                          and `id_key` != '0'" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
-                $nr_keys = mysql_num_rows( $keys );
-                if(!empty($nr_keys)) {
-                        while ( $keyrow = mysql_fetch_array($keys))
-                        {
-                           $key_id = $keyrow['id_key'];
-                           $key_name = get_key_name($key_id);
-                           $message.="  <img src='images/ok.gif'>adding key $key_name (id $key_id)<br>\n";
+        // -----------------------------------------------
+        // We get all keys associated with current account/host
+        // -----------------------------------------------
+        $keys = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
+                                  and `id_key` != '0'" )
+                 or die (mysql_error()."<br>Couldn't execute query: $query");
+        $nr_keys = mysql_num_rows( $keys );
+        if(!empty($nr_keys)) {
+                while ( $keyrow = mysql_fetch_array($keys))
+                {
+                   $key_id = $keyrow['id_key'];
+                   $key_name = get_key_name($key_id);
+                   $message.="  <img src='images/ok.gif'>adding key $key_name (id $key_id)<br>\n";
 
-                           // Getting key value of current key
-                           $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
-                                       or die (mysql_error()."<br>Couldn't execute query: $query");
-                           $nr_keyvalue = mysql_num_rows( $keyvalue );
-                           if (!empty($nr_keyvalue)) {
-                              while ($keyvaluerow  = mysql_fetch_array($keyvalue))
-                              {
-                                $singlekey = $keyvaluerow['key'];
-                                $authorized_keys.= "$singlekey\n";
-                              }
-                            } // end if
-                          } // end while keyrow
-                          mysql_free_result($keys);
-                  } //end if
-
-        $handle = fopen("/tmp/authorized_keys","w");
+                   // Getting key value of current key
+                   $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
+                               or die (mysql_error()."<br>Couldn't execute query: $query");
+                   $nr_keyvalue = mysql_num_rows( $keyvalue );
+                   if (!empty($nr_keyvalue)) {
+                      while ($keyvaluerow  = mysql_fetch_array($keyvalue))
+                      {
+                        $singlekey = $keyvaluerow['key'];
+                        $authorized_keys.= "$singlekey\n";
+                      }
+                    } // end if
+                  } // end while keyrow
+                  mysql_free_result($keys);
+          } //end if
+        $tmp_file="/tmp/skm_tmp_authorized_keys.$id.$id_account.$id_run";
+        $handle = fopen($tmp_file,"w");
         fputs($handle,$authorized_keys);
-        fclose($handle);
 
+        fclose($handle);
 	return $message;
 }
 
@@ -573,7 +589,7 @@ Function view_authorizedkey_file($id,$id_account){
                           mysql_free_result($keys);
                   } //end if
 
-        $handle = fopen("/tmp/authorized_keys","w");
+        $handle = fopen("/tmp/skm_new_authorized_keys.$id_run","w");
         fputs($handle,$authorized_keys);
         fclose($handle);
 
@@ -805,103 +821,114 @@ function formatline( $nr1, $nr2, $stat, &$value )  #change to $value if problems
 } /*end func*/
 
 
-
-
-	
-
-function deploy_authorizedkey_file($id,$id_account,$create_user=0){
+function deploy_authorizedkey_file($id,$id_account,$id_run,$create_user=0){
     // Initialising variables
     $hostname = get_host_name($id);
     $hostip = get_host_ip($id);
+    $ssh_port = get_host_ssh_port($id);
     $account_name = get_account_name($id_account);
     $now = date("Ymd-His");
-
+    
+    $ssh_dir_output='';
+    
+    $opts="$ssh_port -o ConnectTimeout=".$GLOBALS['ssh_timeout'];
+    $opts_ssh="-p $opts";
+    $opts_scp="-P $opts";
+    
+    // Temporary file containig new authorized_keys
+    $tmp_file="/tmp/skm_tmp_authorized_keys.$id.$id_account.$id_run";
+    // Nom du fichier récupéré sur le serveur SKM
+    $tmp_local_file="/tmp/skm_tmp_remote_authorized_keys.$id.$id_account.$id_run";
+            
     $message="";
-
     // Getting homedir of current user
-    $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
+    $output = shell_exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
 
     if (empty($output)&&$create_user) {
-            // Account does not exist           
-            // So we want to create user ....
-                exec("ssh ".$GLOBALS['sudousr']."@$hostname \"adduser --quiet --disabled-password --gecos '' $account_name\" 2>&1 ",$create_output,$create_return_val);
-                if ($create_return_val!=0) {
-                    // oups account not created
-                        for ($i=0;$i<count($create_return_val);$i++) { $output_final.=$create_return_val[$i]."<br>\n"; }
-                        $message.="<img src='images/error.gif'>Can 't create user $account_name on $hostname<br>\n$output_final";
-                } else {
-                    // Account was created
-                    // Getting again homedir of current user (it's better to test again)
-                    $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
-                    
-                    $message.="<img src='images/ok.gif'>Account $account_name on $hostname created<br>\n";
-                    
-                    exec("ssh ".$GLOBALS['sudousr']."@$hostname \"mkdir ~$account_name/.ssh ;chmod 700 ~$account_name/.ssh; chown $account_name:$account_name ~$account_name/.ssh \" 2>&1",$ssh_dir_output,$ssh_dir_val);
-                    if (!empty($ssh_dir_output)) {
-                        for ($i=0;$i<count($ssh_dir_output);$i++) { $output_final2.=$ssh_dir_output[$i]."<br>\n"; }
-                        $message.="<img src='images/error.gif'>Can 't create .ssh directory for $account_name on $hostname<br>\n$output_final2";
-                    } else {
-                        $message.= "<img src='images/ok.gif'>.ssh Directory created for $account_name on $hostname<br>\n";
-                    }
-                    
-               }
+        // Account does not exist           
+        // So we want to create user ....
+        exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$hostname \"adduser --quiet --disabled-password --gecos '' $account_name\" 2>&1 ",$create_output,$create_return_val);
+        if ($create_return_val!=0) {
+            // oups account not created
+                for ($i=0;$i<count($create_return_val);$i++) { $output_final.=$create_return_val[$i]."<br>\n"; }
+                $message.="<img src='images/error.gif'>Can 't create user $account_name on $hostname<br>\n$output_final";
+        } else {
+            // Account was created
+            // Getting again homedir of current user (it's better to test again)
+            $output = shell_exec("ssh $opts".$GLOBALS['sudousr']."@$hostname grep \"$account_name\:\" /etc/passwd 2>&1");
+
+            $message.="<img src='images/ok.gif'>Account $account_name on $hostname created<br>\n";
+
+            $ssh_dir_output=exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$hostname \"mkdir ~$account_name/.ssh ;chmod 700 ~$account_name/.ssh; chown $account_name:$account_name ~$account_name/.ssh \" 2>&1",$ssh_dir_output,$ssh_dir_val);
+            if (!empty($ssh_dir_output)) {
+                for ($i=0;$i<count($ssh_dir_output);$i++) { $output_final2.=$ssh_dir_output[$i]."<br>\n"; }
+                $message.="<img src='images/error.gif'>Can 't create .ssh directory for $account_name on $hostname<br>\n$output_final2";
+            } else {
+                $message.= "<img src='images/ok.gif'>.ssh Directory created for $account_name on $hostname<br>\n";
+            }
+
+       }
     } elseif (empty($output) ){
         $message.= "<img src='images/error.gif'>User $account_name not found on $hostname<br>\n";
     }
     if (!empty($output)){
-
             // There's an answer, let's go
             list($field1,$field2,$field3,$field4,$field5,$homedir,$shell) = explode(":",$output);
             $message.= "<img src='images/ok.gif'>homedir of $account_name on $hostname is $homedir<br>\n";
 
             // Testing presence of file
             // Uncomment for IP if ( test_presence($hostip,"$homedir/.ssh/authorized_keys") == 1 )
-            if ( test_presence($hostname,"$homedir/.ssh/authorized_keys") == 1 )
+            if ( test_presence($hostname,"$homedir/.ssh/authorized_keys",$ssh_port ) == 1 )
             {
                     $message.="<img src='images/warning.gif'>$homedir/.ssh/authorized_keys was not found...<br>\n";
             } else {
-                    // Archiving destination file
-                    // Uncomment for IP : $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostip cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
-                    $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostname cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
-                    if (empty($output)){
-                            //everything was fine
-                            $message .= "<img src='images/ok.gif'>authorized_keys has been archived successfully to $homedir/.ssh/authorized_keys.$now<br>\n";
-                    } else {
-                            $message .= "<img src='images/error.gif'>authorized_keys could NOT be archived to $homedir/.ssh/authorized_keys.$now<br>\n";
-                            return $message;
-                    }
-                    // Uncomment for IP $output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostip:/$homedir/.ssh/authorized_keys /tmp/aut2.txt 2>&1");
-                    $output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostname:/$homedir/.ssh/authorized_keys /tmp/aut2.txt 2>&1");
-                    if (!empty($output)){
-                            //everything was fine
-                            $message .= "<img src='images/error.gif'>authorized_keys could not be copied locally ($output). The diff test might not be valid.<br>\n";
-                    }
-                    $output = shell_exec("chmod 740 /tmp/aut2.txt 2>&1");
-                    if (!empty($output)){
-                            //everything was fine
-                            $message .= "<img src='images/error.gif'>authorized_keys could not chg perm on /tmp/aut2.txt ($output). The diff test might not be valid.<br>\n";
-                    }
+                // Archiving destination file
+                // Uncomment for IP : $output = shell_exec("ssh ".$GLOBALS['sudousr']."@$hostip cp $homedir/.ssh/authorized_keys $homedir/.ssh/authorized_keys.$now 2>&1");
+                $backup_file = "$homedir/.ssh/authorized_keys.$now";
+
+                $output = shell_exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$hostname cp $homedir/.ssh/authorized_keys $backup_file 2>&1");
+                if (empty($output)){
+                        //everything was fine
+                        $message .= "<img src='images/ok.gif'>authorized_keys has been archived successfully to $backup_file<br>\n";
+                } else {
+                        $message .= "<img src='images/error.gif'>authorized_keys could NOT be archived to $backup_file<br>\n";
+                        return $message;
+                }
+                // Get new authorized keys
+                // Uncomment for IP $output = shell_exec("scp ".$GLOBALS['sudousr']."@$hostip:/$homedir/.ssh/authorized_keys $tmp_diff_file 2>&1");
+                $output = shell_exec("scp $opts_scp ".$GLOBALS['sudousr']."@$hostname:/$homedir/.ssh/authorized_keys $tmp_local_file 2>&1");
+                if (!empty($output)){
+                        //everything was fine
+                        $message .= "<img src='images/error.gif'>authorized_keys could not be copied locally ($output). The diff test might not be valid.<br>\n";
+                }
+                // Changing rights (really needed ?)
+                $output = shell_exec("chmod 740 $tmp_local_file 2>&1");
+                if (!empty($output)){
+                        //everything was fine
+                        $message .= "<img src='images/error.gif'>authorized_keys could not chg perm on $tmp_local_file ($output). The diff test might not be valid.<br>\n";
+                }
             }
 
-            // Uncomment for IP $output = shell_exec("scp /tmp/authorized_keys root@$hostip:$homedir/.ssh/authorized_keys 2>&1");
-            $output = shell_exec("scp /tmp/authorized_keys ".$GLOBALS['sudousr']."@$hostname:$homedir/.ssh/authorized_keys 2>&1");
+            // Uncomment for IP $output = shell_exec("scp $tmp_file root@$hostip:$homedir/.ssh/authorized_keys 2>&1");
+            
+            // Send new authorized_keys on server
+            $output = shell_exec("scp $opts_scp $tmp_file ".$GLOBALS['sudousr']."@$hostname:$homedir/.ssh/authorized_keys 2>&1");
             if (empty($output)){
-                    //everything is fine
-                    $message .= "<img src='images/ok.gif'>File authorized_keys has been pushed successfully to $hostname for account $account_name<br>\n";
-                    //comparing number of keys
-                    $differences = "";
-                    #$differences = shell_exec("diff --ignore-blank-lines -u /tmp/aut2.txt /tmp/authorized_keys2 | grep -v ^--- | grep -v ^+++  | sed 's/^-/<img src=images\/add.gif> /g' | sed 's/^+/<img src=images\/error.gif> /g' | sed 's/$/<br>/g'");
-                    $differences = shell_exec("diff --ignore-blank-lines -u /tmp/aut2.txt /tmp/authorized_keys2 | grep -v ^--- | grep -v ^+++  | sed 's/^-/<P class=delete> /g' | sed 's/^+/<P class=add> /g' | sed 's/^ ssh-rsa/<p > /g' | sed 's/$/<\/P>/g'");
-                    if ( empty($differences)){
-                            $message .= "<br>Files are identicals<br>\n";
-                    } else {
-                            $message .= "<br>File comparison output :<br>\n";
-                            $message .= "<br>Legende :<br>";
-                            $message .= "<p class=add> Key(s) added<br><p class=delete> Key(s) deleted</p><br>";
-                            $message .= $differences;
-                    }
+                //everything is fine
+                $message .= "<img src='images/ok.gif'>File authorized_keys has been pushed successfully to $hostname for account $account_name<br>\n";
+                //comparing number of keys
+                $differences = "";
+                $differences = shell_exec("diff --ignore-blank-lines -u  $tmp_file $tmp_local_file | grep -v ^--- | grep -v ^+++  |grep -v ^@@ | sed 's/^-/<img src=images\/add.gif> /g' | sed 's/^+/<img src=images\/error.gif> /g' | sed 's/$/<br>/g'");
+                #$differences = shell_exec("diff --ignore-blank-lines -u $tmp_file $tmp_local_file | grep -v ^--- | grep -v ^+++  | sed 's/^-/<img src='images/error.gif'><P class=delete> /g' | sed 's/^+/<P class=add> /g' | sed 's/^ ssh-rsa/<p > /g' | sed 's/$/<\/P>/g'");
+
+                if ( empty($differences)){
+                        $message .= "<br><img src='images/warning.gif'>Files are identicals<br>\n";
+                } else {
+                        $message .= "<br>File comparison output :<br>\n";
+                        $message .= $differences;
+                }
              } else {
-                    $message .= "<img src='images/error.gif'>An error occured while pushing file authorized_keys to $hostname for account $account_name\n$output"."<br>\n";
+                $message .= "<img src='images/error.gif'>An error occured while pushing file authorized_keys to $hostname for account $account_name\n$output"."<br>\n";
              }
     } 
     $message.="</fieldset><br>\n";
@@ -966,44 +993,55 @@ function display_keyring($id_host,$id_account,$id_keyring,$id_hostgroup,$ident_l
 
 
 // ********************************* TEST CONNECTION *****************************************
-function test_connection($host,$accept_pub_key){
+function test_connection($host,$accept_pub_key,$ssh_port=22){
     
-        if ($accept_pub_key) $opts='-oStrictHostKeyChecking=no';
-	//$output = shell_exec("ssh $opts ".$GLOBALS['sudousr']."@$host ls -la| grep '^.'");
-	//if ( empty($output ))
-	{
-            exec("ssh $opts ".$GLOBALS['sudousr']."@$host ls -la 2>&1",$output,$return_val);
-            for ($i=0;$i<count($output);$i++) { $output_final.=$output[$i]."<br>\n"; }
-            
-            if ($return_val!=0)
-            {
-                return array(0,"<img src='images/error.gif'>Connection failed. Please see output below.<br>Output is $output_final<br>\n");
-		
-            } else {
-                return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
-            }
-                
-	} /*else {
-		return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
-	}   */    
+    $output_final='';
+    
+    $opts="$ssh_port -o ConnectTimeout=".$GLOBALS['ssh_timeout'];
+    $opts_ssh="-p $opts";
+    
+    if ($accept_pub_key) $opts_ssh.=' -oStrictHostKeyChecking=no';
+    //$output = shell_exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$host ls -la| grep '^.'");
+    //if ( empty($output ))
+    {
+        exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$host ls -la 2>&1",$output,$return_val);
+        for ($i=0;$i<count($output);$i++) { $output_final.=$output[$i]."<br>\n"; }
+
+        if ($return_val!=0)
+        {
+            return array(0,"<img src='images/error.gif'>Connection failed. Please see output below.<br>Output is $output_final<br>\n");
+
+        } else {
+            return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
+        }
+
+    } /*else {
+            return array(1,"<img src='images/ok.gif'>SSH connection is OK.<br>\n");
+    }   */    
 }
 
 // ********************************* TEST PRESENCE *****************************************
-function test_presence($host,$file){
-	$output = shell_exec("ssh ".$GLOBALS['sudousr']."@$host ls -la $file");
-	if ( empty($output ))
-	{
-		return 1;
-	} else {
-		return 0;
-	}
+function test_presence($host,$file,$ssh_port=22){
+    
+    $opts="$ssh_port -o ConnectTimeout=".$GLOBALS['ssh_timeout'];
+    $opts_ssh="-p $opts";
+    
+    $output = shell_exec("ssh $opts_ssh ".$GLOBALS['sudousr']."@$host ls -la $file");
+    
+    if ( empty($output )) return 1;
+    else return 0;
 }
 
 // ********************************* DEPLOY GLOBALFILE *****************************************
 function deploy_globalfile($id_file,$id_host){
 	$hostname = get_host_name($id_host);
 	$hostip = get_host_ip($id_host);
-	
+	$ssh_port = get_host_ssh_port($id_host);
+        
+        $opts="$ssh_port -o ConnectTimeout=".$GLOBALS['ssh_timeout'];
+        $opts_ssh="-p $opts";
+        
+        
         $gfiles = mysql_query( "SELECT * FROM `globalfiles` WHERE `id` = '$id_file'" )
                     or die (mysql_error()."<br>Couldn't execute query: $query");
         $nr_gbfiles = mysql_num_rows( $gfiles );
@@ -1027,7 +1065,7 @@ function deploy_globalfile($id_file,$id_host){
 		}
 
 		// Testing presence of file
-		if ( test_presence($hostname,$path/$name) == 1 )
+		if ( test_presence($hostname,$path/$name,$ssh_port) == 1 )
 		{
 			$message.="<img src='images/warning.gif'>$path/$name was not found...<br>\n";
 		} else {
@@ -1044,7 +1082,7 @@ function deploy_globalfile($id_file,$id_host){
 		}
 
 		// Deploying
-		$output = shell_exec("scp $localfile ".$GLOBALS['sudousr']."@$hostname:$path/$name 2>&1");
+		$output = shell_exec("scp $opts_ssh $localfile ".$GLOBALS['sudousr']."@$hostname:$path/$name 2>&1");
 
 		if (empty($output)){
 		// File was correctly transfered

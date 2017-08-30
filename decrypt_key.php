@@ -13,7 +13,6 @@ if (isset($_GET["id_hostgroup"])) $id_hostgroup = $_GET["id_hostgroup"]; else $i
 if (isset($_POST["step"])) $step = $_POST["step"]; else $step = "";
 if (isset($_POST["createUser"])) $create_user = $_POST["createUser"]; else $create_user = "";
 
-
 if ( empty( $step ) )
 {
 $smarty->assign("id",$id);
@@ -49,13 +48,11 @@ $smarty->display("decrypt_key.tpl");
 
 		// We decrypt the key
 		$output = shell_exec("echo \"$passwd\" | ".$gpg_bin." -v --batch --homedir ".$home_of_webserver_account."/.gnupg -u $gpg_user -o ".$home_of_webserver_account."/.ssh/id_rsa --passphrase-fd 0 --decrypt ".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
-// we change permission on the file
+                // we change permission on the file
 		$output .= shell_exec("chmod 600 ".$home_of_webserver_account."/.ssh/id_rsa");
-	
-	        $pos = strstr($output,'failed');
-		$pos = strstr($output,'No such file or directory');
-
-        	if ( $pos === false ) {
+                
+                // Check if private key exists
+                if (file_exists($home_of_webserver_account."/.ssh/id_rsa")) {
                 	$output .= "Decryption successfull";
         	} else {
 			header("location:decrypt_key.php?action=deploy_account&id=$id&id_account=$id_account&id_hostgroup=$id_hostgroup");

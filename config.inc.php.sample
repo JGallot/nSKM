@@ -21,7 +21,7 @@ $mysql_db = "skm";
 ///////////////////////////////////////////////////
 // home directory of the webserver user, containing .ssh directory etc.
 // no trailing slash required
-// example: $home_of_webserver_account = "/var/www";
+///////////////////////////////////////////////////
 $home_of_webserver_account = "/var/empty";
 
 // gpg tool fullpath
@@ -41,8 +41,13 @@ $admin_email = "youremail@yourdomain.com";
 
 ///////////////////////////////////////////////////
 // Configuration for ssh connection
+///////////////////////////////////////////////////
+
 // sudouser is the name of the remote unix account used to manage ssh keys.
 $sudousr = "badboy";
+
+// Timeout for SSH connexions
+$ssh_timeout=2;
 
 // Default Message adding at the top of authorized_keys
 $SKM_AUTH_MSG="######### Do not modify, modifications will be erased ##########";
