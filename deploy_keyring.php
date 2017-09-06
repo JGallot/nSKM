@@ -86,7 +86,7 @@ else
         if ($SKM_SEND_MAIL)
         {            
             $message='';
-            $emailuser = $admin_email;
+            $emailuser = $email_to;
 
             foreach ($hosts AS $host) {
                 $message.= "<h4>Deploying Keyring <b><i>$keyring_name</i></b> on ".$host['name']."</h4>";
@@ -111,7 +111,7 @@ else
             
             
             $hdrs = array(
-                  'From'    => "SKM <".$admin_email.">",
+                  'From'    => "SKM <".$email_from.">",
                   'Subject' =>  "SKM: Deploying Keyring $keyring_name"
                   );
             $body = $mime->get();

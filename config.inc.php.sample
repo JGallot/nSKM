@@ -37,7 +37,10 @@ $gpg_user = "Apache-skm"
 $SKM_SEND_MAIL = 1;
 
 // Mail of people who will receive deployement results
-$admin_email = "youremail@yourdomain.com";
+$email_to = "youremail@yourdomain.com";
+
+// Mail from
+$email_from = "noreply@domain.net"
 
 ///////////////////////////////////////////////////
 // Configuration for ssh connection

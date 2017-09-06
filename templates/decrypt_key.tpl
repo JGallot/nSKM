@@ -13,6 +13,7 @@
         The local SKM SSH Private key is encrypted (if not do it before proceed)<br><br>
         Please provide the passphrase : 
         <input type="password" name="psPassword" size="25"><br>
+        <input type="hidden" name="user_skm_4_save" size="10"><br>
       </td>
     </tr>
     <tr>

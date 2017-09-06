@@ -51,7 +51,7 @@ if(!empty($id) and !empty($id_account))
 
     if ($SKM_SEND_MAIL)
     {
-            $emailuser = $admin_email;
+            $emailuser = $email_to;
 
             $message = "Deploying <b>$account_name</b> to <b>$hostname</b>";
             $message = "$message<br><br>$output";
@@ -67,7 +67,7 @@ if(!empty($id) and !empty($id_account))
                 $mime->addHTMLImage("images/$value.gif","image/gif");
             }
             $hdrs = array(
-                  'From'    => "SKM <".$admin_email.">",
+                  'From'    => "SKM <".$email_from.">",
                   'Subject' =>  "SKM: Deploying SSH-Key from $account_name to $hostname"
                   );
             $body = $mime->get();
