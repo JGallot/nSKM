@@ -116,7 +116,7 @@ else
                   );
             $body = $mime->get();
             $hdrs = $mime->headers($hdrs);
-            $mail =& Mail::factory('mail');	
+            $mail =& Mail::factory('mail',"-f $email_from");	
 
             $mail->send($emailuser, $hdrs, $body);
         }
