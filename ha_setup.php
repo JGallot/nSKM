@@ -13,9 +13,10 @@ $smarty->assign("host_name",$host_name);
 $smarty->assign("id_hostgroup",$id_hostgroup);
 $smarty->assign("account",$id_account);
 
+$mysql_link=$GLOBALS['mysql_link'];
 
 // We get the list of accounts
-$result = mysql_query( "SELECT * FROM `accounts`" );
+$result = mysqli_query( $mysql_link,"SELECT * FROM `accounts`" );
 
 if (isset($_POST["step"])) $step = $_POST["step"]; else $step = "";
 if($step != '1')
@@ -32,8 +33,8 @@ else
 	$id_host = $_POST['id'];
 	$id_hostgroup = $_POST['id_hostgroup'];
 
-	mysql_query( "INSERT INTO `hosts-accounts` (`id_host`, `id_account`, `expand`) VALUES('$id_host','$id_account','Y')" ) 
-		or die(mysql_error()."<br>Couldn't execute query");
+	mysqli_query($mysql_link, "INSERT INTO `hosts-accounts` (`id_host`, `id_account`, `expand`) VALUES('$id_host','$id_account','Y')" ) 
+		or die(mysqli_error($mysql_link)."<br>Couldn't execute query");
     header("Location:host-view.php?id_hostgroup=$id_hostgroup&id=$id_host");
     echo ("account Added, redirecting...");
     exit ();

@@ -4,6 +4,7 @@ require_once('inc/global.inc.php');
 
 $smarty->assign("title","Host Setup");
 
+$mysql_link=$GLOBALS['mysql_link'];
 $name = "";
 $ip = "";
 $id_hostgroup = "";
@@ -101,9 +102,9 @@ elseif($step != '1' && !isset($_POST["ns_lookup"]))
         if (!empty($id))
         {
                 // We modify an existing reminder
-                $result = mysql_query( "SELECT * FROM `hosts` where `id`='$id'" )
-                                or die (mysql_error()."<br>Couldn't execute query: $query");
-                $row = mysql_fetch_array( $result );
+                $result = mysqli_query($mysql_link, "SELECT * FROM `hosts` where `id`='$id'" )
+                                or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                $row = mysqli_fetch_array( $result );
                 $name = $row["name"];
                 $ip = $row["ip"];
                 $id_hostgroup = $row["id_group"];
@@ -184,12 +185,12 @@ else
     if(empty($id)){
    // this is a new host
       // No error let's add the entry
-      $query = mysqli_query($GLOBALS['mysql_link'], "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,`uloc`,`cageno`,`model`,`procno`,`provider`,`install_dt`,`po`,`cost`,`maint_cost`,`maint_po`,`maint_provider`,`maint_end_dt`,`life_end_dt`,`ostype`,`osvers`,`intf1`,`intf2`,`defaultgw`,`monitor`,`selinux`,`datechgroot`) VALUES('$name','$ip','$group','$serialno','$memory','$osversion','$cabinet','$uloc','$cageno','$model','$procno','$provider','$install_dt','$po','$cost','$maint_cost','$maint_po','$maint_provider','$maint_end_dt','$life_end_dt','$ostype','$osvers','$intf1','$intf2','$defaultgw','$monitor','$selinux','$datechgroot')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
+      $query = mysqli_query($mysql_link, "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,`uloc`,`cageno`,`model`,`procno`,`provider`,`install_dt`,`po`,`cost`,`maint_cost`,`maint_po`,`maint_provider`,`maint_end_dt`,`life_end_dt`,`ostype`,`osvers`,`intf1`,`intf2`,`defaultgw`,`monitor`,`selinux`,`datechgroot`) VALUES('$name','$ip','$group','$serialno','$memory','$osversion','$cabinet','$uloc','$cageno','$model','$procno','$provider','$install_dt','$po','$cost','$maint_cost','$maint_po','$maint_provider','$maint_end_dt','$life_end_dt','$ostype','$osvers','$intf1','$intf2','$defaultgw','$monitor','$selinux','$datechgroot')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
       $id = mysqli_insert_id();
       // add account root (id 1) to created host
-      mysqli_query($GLOBALS['mysql_link'], "INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('$id','1')");
+      mysqli_query($mysql_link, "INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('$id','1')");
       // add SKM Public Key (id 1) for user root on created host
-      mysqli_query($GLOBALS['mysql_link'], "INSERT INTO `hak` (`id_host`,`id_account`,`id_key`) VALUES ('$id','1','1')");
+      mysqli_query($mysql_link, "INSERT INTO `hak` (`id_host`,`id_account`,`id_key`) VALUES ('$id','1','1')");
       header("Location:hosts-view.php?id_hostgroup=$group");
       echo ("host Added, redirecting...");
       exit ();
@@ -197,7 +198,7 @@ else
       // We modify an existing reminder
       // setting the variable for the update
       $name = $_POST['name'];
-      mysqli_query( $GLOBALS['mysql_link'],"UPDATE `hosts` SET `name` = '$name',`ip`='$ip',`id_group`='$group',`serialno`='$serialno',`memory`='$memory',`osversion`='$osversion',`cabinet`='$cabinet',`uloc`='$uloc',`cageno`='$cageno',`model`='$model',`procno`='$procno',`provider`='$provider',`install_dt`='$install_dt',`po`='$po',`cost`='$cost',`maint_cost`='$maint_cost',`maint_po`='$maint_po',`maint_provider`='$maint_provider',`maint_end_dt`='$maint_end_dt',`life_end_dt`='$life_end_dt',`ostype`='$ostype',`osvers`='$osvers',`intf1`='$intf1',`intf2`='$intf2',`defaultgw`='$defaultgw',`monitor`='$monitor',`selinux`='$selinux',`datechgroot`='$datechgroot' WHERE `id` = '$id' " ) or die(mysql_error()."<br>Couldn't execute query: $query");
+      mysqli_query( $mysql_link,"UPDATE `hosts` SET `name` = '$name',`ip`='$ip',`id_group`='$group',`serialno`='$serialno',`memory`='$memory',`osversion`='$osversion',`cabinet`='$cabinet',`uloc`='$uloc',`cageno`='$cageno',`model`='$model',`procno`='$procno',`provider`='$provider',`install_dt`='$install_dt',`po`='$po',`cost`='$cost',`maint_cost`='$maint_cost',`maint_po`='$maint_po',`maint_provider`='$maint_provider',`maint_end_dt`='$maint_end_dt',`life_end_dt`='$life_end_dt',`ostype`='$ostype',`osvers`='$osvers',`intf1`='$intf1',`intf2`='$intf2',`defaultgw`='$defaultgw',`monitor`='$monitor',`selinux`='$selinux',`datechgroot`='$datechgroot' WHERE `id` = '$id' " ) or die(mysql_error()."<br>Couldn't execute query: $query");
       // Let's go to the Reminder List page
       header("Location:host-view.php?id_hostgroup=$group&id=$id");
       echo ("host Modified, redirecting...");

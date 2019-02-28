@@ -10,6 +10,8 @@ if (isset($_GET["account_name"])) $account_name = $_GET["account_name"]; else $a
 if (isset($_GET["id_hostgroup"])) $id_hostgroup = $_GET["id_hostgroup"]; else $id_hostgroup = "";
 if (isset($_POST["step"])) $step = $_POST["step"]; else $step = "";
 
+$mysql_link=$GLOBALS['mysql_link'];
+
 if($step != '1')
 {
 $smarty->assign('host_name',$host_name);
@@ -36,7 +38,8 @@ else
 	if (isset($_POST["key"])) $key_id = $_POST["key"]; else $key_id = "";
 	if (isset($_POST["id_hostgroup"])) $id_hostgroup = $_POST["id_hostgroup"]; else $id_hostgroup = "";
 
-    mysql_query( "INSERT INTO `hak` (`id_host`, `id_account`, `id_keyring`,`expand`) VALUES('$host_id','$account_id','$keyring_id','Y')" ) or die(mysql_error()."<br>Couldn't execute query: insert host_id=$host_id, account_id=$account_id, keyring_id=$keyring_id [$query]");
+    mysqli_query($mysql_link, "INSERT INTO `hak` (`id_host`, `id_account`, `id_keyring`,`expand`) VALUES('$host_id','$account_id','$keyring_id','Y')" )
+            or die(mysqli_error($mysql_link)."<br>Couldn't execute query: insert host_id=$host_id, account_id=$account_id, keyring_id=$keyring_id [$query]");
     header("Location:host-view.php?id_hostgroup=$id_hostgroup&id=$host_id");
     echo ("keyring Added, redirecting...");
     exit ();

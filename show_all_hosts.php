@@ -33,8 +33,9 @@ if(!empty($nr))
 else 
     $nb_pages = 0;
 
-$result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `hosts` ORDER BY `name` LIMIT $premierElementAAfficher, $nombreDeElementsParPage " )
-    or die (mysqli_error()."<br>Couldn't execute query: $query");
+$mysql_link=$GLOBALS['mysql_link'];
+$result = mysqli_query($mysql_link, "SELECT * FROM `hosts` ORDER BY `name` LIMIT $premierElementAAfficher, $nombreDeElementsParPage " )
+    or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
 $nr =  $result->num_rows ;
 if(empty($nr)) 
@@ -56,28 +57,27 @@ else
 	$hosts[$id]['id_direction'] = $row["id_direction"];
 	$hosts[$id]['serialno']	= $row["serialno"];
 		  
-		// displaying rows
-		if ( $odd==1 )
-			$odd=0;
-		else
-			$odd+=1;
+        // displaying rows
+        if ( $odd==1 )
+                $odd=0;
+        else
+                $odd+=1;
 
-		$hosts[$id]['odd'] = $odd;
-		
-		// getting the right icon
-		switch($row['ostype'])
-		{
-			case "RHEL" : $icon="images/icon-redhat.gif"; break;
-			case "AIX" : $icon="images/icon-aix.gif"; break;
-			case "Solaris" : $icon="images/icon-solaris.gif"; break;
-			case "Windows" : $icon="images/icon-windows.gif"; break;
-			case "FreeBSD" : $icon="images/icon-freebsd.gif"; break;
-			default : $icon="images/server.gif";
-		}
-		$hosts[$id]['icon'] = $icon;
+        $hosts[$id]['odd'] = $odd;
 
+        // getting the right icon
+        switch($row['ostype'])
+        {
+                case "RHEL" : $icon="images/icon-redhat.gif"; break;
+                case "AIX" : $icon="images/icon-aix.gif"; break;
+                case "Solaris" : $icon="images/icon-solaris.gif"; break;
+                case "Windows" : $icon="images/icon-windows.gif"; break;
+                case "FreeBSD" : $icon="images/icon-freebsd.gif"; break;
+                default : $icon="images/server.gif";
+        }
+        $hosts[$id]['icon'] = $icon;
     }
-    mysql_free_result( $result );
+    mysqli_free_result( $result );
 }
 $smarty->assign("hosts",$hosts);
 $smarty->assign("nb_pages",$nb_pages);

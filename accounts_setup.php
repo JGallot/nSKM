@@ -2,19 +2,19 @@
 require_once('inc/global.inc.php');
 
 $smarty->assign("title","Account setup");
+$mysql_link=$GLOBALS['mysql_link'];
 
 if (isset($_POST["step"])) $step = $_POST["step"]; else $step = "";
 $name = "";
 if($step != '1')
 {
-
   if (isset($_GET["id"])) $id = $_GET["id"]; else $id = "";
   if (!empty($id))
   {
     // We modify an existing reminder
-    $result = mysql_query( "SELECT * FROM `accounts` where `id`='$id'" )
-			or die (mysql_error()."<br>Couldn't execute query: $query");
-    $row = mysql_fetch_array( $result );
+    $result = mysqli_query($mysql_link, "SELECT * FROM `accounts` where `id`='$id'" )
+			or die (mysqli_error()."<br>Couldn't execute query: $query");
+    $row = mysqli_fetch_array( $result );
     $name = $row["name"];
   }
 $smarty->assign('name',$name);
@@ -32,7 +32,7 @@ else
     // this is a new account
       $name = $_POST['name'];
       // No error let's add the entry
-      mysql_query( "INSERT INTO `accounts` (`name` ) VALUES('$name')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
+      mysqli_query($mysql_link, "INSERT INTO `accounts` (`name`,`creation`,`expired`) VALUES('$name',now(),now())" ) or die(mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
       header("Location:accounts.php");
       echo ("Account Added, redirecting...");
       exit ();
@@ -40,7 +40,7 @@ else
       // We modify an existing reminder
       // setting the variable for the update
       $name = $_POST['name'];
-      mysql_query( "UPDATE `accounts` SET `name` = '$name' WHERE `id` = '$id' " );
+      mysqli_query( $mysql_link, "UPDATE `accounts` SET `name` = '$name' WHERE `id` = '$id' " );
       // Let's go to the Reminder List page
       header("Location:accounts.php");
       echo ("Account Modified, redirecting...");

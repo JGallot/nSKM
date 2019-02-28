@@ -259,94 +259,97 @@ function get_account_name($id){
 }
 function get_all_keyrings($id_host='',$id_account='')
 {
+    if (($id_host!='')&&($id_account!=''))
+            $req="SELECT * FROM keyrings where id not in (SELECT id_keyring from hak where id_host=$id_host and id_account=$id_account) ORDER BY `name`";
+    else
+            $req="SELECT * FROM `keyrings` ORDER BY `name`";
 
-if (($id_host!='')&&($id_account!=''))
-	$req="SELECT * FROM keyrings where id not in (SELECT id_keyring from hak where id_host=$id_host and id_account=$id_account) ORDER BY `name`";
-else
-	$req="SELECT * FROM `keyrings` ORDER BY `name`";
+    $kr=mysqli_query($GLOBALS['mysql_link'],$req)
+                            or die (mysqli_error()."<br>Couldn't execute query: $req");
 
-$kr=mysql_query($req)
-                        or die (mysql_error()."<br>Couldn't execute query: $req");
+    $kr_nr = $kr->num_rows;
+    if (!empty($kr_nr)) {
+        while( $row = mysqli_fetch_array( $kr ))
+        {
+                  // Afecting values
+                  $name = $row["name"];
+                  $id = $row["id"];
 
-$kr_nr = mysql_num_rows( $kr );
-if (!empty($kr_nr)) {
-              while( $row = mysql_fetch_array( $kr ))
-              {
-                        // Afecting values
-                        $name = $row["name"];
-                        $id = $row["id"];
-
-                        $keyrings[$id]=$name;
-                }
-                mysql_free_result( $kr );
+                  $keyrings[$id]=$name;
         }
-        return ($keyrings);
+        mysqli_free_result( $kr );
+      }
+      return ($keyrings);
 }
 
 function get_all_accounts()
 {
-$kr=mysql_query( "SELECT * FROM `accounts` ORDER BY `name`" )
-                        or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
+    $kr=mysqli_query($mysql_link, "SELECT * FROM `accounts` ORDER BY `name`" )
+        or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
-$kr_nr = mysql_num_rows( $kr );
-if (!empty($kr_nr)) {
-              while( $row = mysql_fetch_array( $kr ))
-              {
-                        // Afecting values
-                        $name = $row["name"];
-                        $id = $row["id"];
-                        $keyrings[$id]=$name;
-                }
-                mysql_free_result( $kr );
+    $kr_nr =  $kr->num_rows;
+    if (!empty($kr_nr)) {
+        while( $row = mysqli_fetch_array( $kr ))
+        {
+                  // Afecting values
+                  $name = $row["name"];
+                  $id = $row["id"];
+                  $keyrings[$id]=$name;
         }
-        return ($keyrings);
+        mysqli_free_result( $kr );
+    }
+    return ($keyrings);
 }
-
-
-
 
 // ****************************** GET Keyring NAME ****************************************
 function get_keyring_name($id){
-    $result = mysql_query( "SELECT * FROM `keyrings` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
 
-    $nr = mysql_num_rows($result);
+    $result = mysqli_query( $mysql_link,"SELECT * FROM `keyrings` WHERE `id` = '$id' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+
+    $nr = $result->num_rows;
     if(!empty($nr)) {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 }
 
 // ****************************** GET ACCOUNT NAME ****************************************
 function get_host_name($id){
-    $result = mysql_query( "SELECT * FROM `hosts` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
 
-    $nr = mysql_num_rows($result);
+    $result = mysqli_query($mysql_link, "SELECT * FROM `hosts` WHERE `id` = '$id' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return('Zombie dead Host');
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 }
 
 // ****************************** GET HOST IP ****************************************
 function get_host_ip($id){
-    $result = mysql_query( "SELECT `ip`,`name` FROM `hosts` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
 
-    $nr = mysql_num_rows($result);
+    $result = mysqli_query($mysql_link, "SELECT `ip`,`name` FROM `hosts` WHERE `id` = '$id' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return '';
       //echo 'No host found...';
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       //return $row['ip'];
   
       // Beware IPV4 only....

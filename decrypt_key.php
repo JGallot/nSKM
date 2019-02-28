@@ -35,9 +35,9 @@ $smarty->display("decrypt_key.tpl");
         $clean = $_POST['cleanKnownHosts'];
 
 	// Validating password
-	$sResult = mysql_query( "Select id from `security` where `password` = MD5('$passwd')" ) 
-		or die (mysql_error()."<br>Couldn't execute query: $query");
-	$sNumRow = mysql_num_rows( $sResult );
+	$sResult = mysqli_query( $GLOBALS['mysql_link'],"Select id from `security` where `password` = MD5('$passwd')" ) 
+		or die (mysqli_error()."<br>Couldn't execute query: $query");
+	$sNumRow = mysqli_num_rows( $sResult );
 
     	if (empty($sNumRow)) {
       		header("location:incorrect_key.php");
