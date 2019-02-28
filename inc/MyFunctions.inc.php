@@ -8,11 +8,11 @@ include_once('database.inc.php'); // Our database connectivity file
 function exists_hostname($name){
     //Display the selection box for the groups
     $query = "SELECT * FROM `hosts` where `name`='" . $name . "'";
-    $result = mysql_query( $query )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], $query )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
-    mysql_free_result( $result );
+    $nr = $result->num_rows;
+    mysqli_free_result( $result );
     return($nr);
 }
 
@@ -21,28 +21,28 @@ function exists_hostname($name){
 function exists_hostgroup($name){
     //Display the selection box for the groups
     $query = "SELECT * FROM `groups` where `name`='" . $name . "'";
-    $result = mysql_query( $query )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], $query )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
-    mysql_free_result( $result );
+    $nr = $result->num_rows;
+    mysqli_free_result( $result );
     return($nr);
 }
 
 // ****************************** DISPLAY GROUP AVAILABLE ****************************************
 function display_available_hosts(){
     //Display the selection box for the groups
-    $result = mysql_query( "SELECT * FROM `hosts` ORDER BY `name` " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `hosts` ORDER BY `name` " )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       echo 'No host found...';
     }
     else {
       echo '<select class="list" name="host">';
       echo '<option selected value="0">Please select a host</option>';
-      while( $row = mysql_fetch_array( $result ))
+      while( $row = mysqli_fetch_array( $result ))
       {
         // Afecting values
         $name = $row["name"];
@@ -50,7 +50,7 @@ function display_available_hosts(){
         echo '<option value='.$id.'>'.$name.'</option>';
       }
       echo '</select>';
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
 }
 
@@ -59,17 +59,17 @@ function display_available_hosts(){
 function display_available_groups($id_hostgroup){
 
     //Display the selection box for the groups
-    $result = mysql_query( "SELECT * FROM `groups` ORDER BY `name` " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `groups` ORDER BY `name` " )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       echo 'No group found...';
     }
     else {
       echo '<select class="list" name="group">';
       echo '<option selected value="1">Please select a group</option>';
-      while( $row = mysql_fetch_array( $result ))
+      while( $row = mysqli_fetch_array( $result ))
       {
         // Afecting values
         $name = $row["name"];
@@ -82,7 +82,7 @@ function display_available_groups($id_hostgroup){
 	}
       }
       echo '</select>';
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
 }
 
@@ -90,12 +90,12 @@ function get_all_hostgroups()
 {
     $hostgroup_ar=array();
     
-    $hostgroup=mysql_query( "SELECT * FROM `groups` ORDER BY `name`" )
-                            or die (mysql_error()."<br>Couldn't execute query: $query");
+    $hostgroup=mysqli_query( $GLOBALS['mysql_link'], "SELECT * FROM `groups` ORDER BY `name`" )
+                            or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $hostgroup_nr = mysql_num_rows( $hostgroup );
+    $hostgroup_nr = $hostgroup->num_rows;
     if (!empty($hostgroup_nr)) {
-        while( $hostgroup_row = mysql_fetch_array( $hostgroup ))
+        while( $hostgroup_row = mysqli_fetch_array( $hostgroup ))
         {
                   // Afecting values
                   $name = $hostgroup_row["name"];
@@ -103,7 +103,7 @@ function get_all_hostgroups()
 
                   $hostgroup_ar[$id_hostgroup]=$name;
           }
-          mysql_free_result( $hostgroup );
+          mysqli_free_result( $hostgroup );
     }
     return ($hostgroup_ar);
 }
@@ -112,15 +112,15 @@ function get_all_hostgroups()
 function get_group_name($id_hostgroup){
 
     //Display the selection box for the groups
-    $result = mysql_query( "SELECT name FROM `groups` WHERE `id`='$id_hostgroup' " )
+    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT name FROM `groups` WHERE `id`='$id_hostgroup' " )
                              or die (mysql_error()."<br>Couldn't execute query: $query");
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return ('No group assigned');
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 
@@ -148,35 +148,35 @@ function get_available_keys(){
 
     $res=array();
     //Display the selection box for the keys
-    $result = mysql_query( "SELECT * FROM `keys` ORDER BY `name` " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `keys` ORDER BY `name` " )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(!empty($nr)) {
-      while( $row = mysql_fetch_array( $result ))
+      while( $row = mysqli_fetch_array( $result ))
       {
 	$id=$row['id'];
 	$name=$row['name'];
         // Afecting values
 	$res[$id]['name']=$name;
       }
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
     return ($res);
 }
 
 // ****************************** DISPLAY ACCOUNT AVAILABLE ****************************************
 function display_availables_accounts(){
-    $result = mysql_query( "SELECT * FROM `accounts` ORDER BY `name` " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `accounts` ORDER BY `name` " )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       echo 'No account found...';
     }
     else {
       echo '<select class="list" name="account">';
-      while( $row = mysql_fetch_array( $result ))
+      while( $row = mysqli_fetch_array( $result ))
       {
         // Afecting values
         $name = $row["name"];
@@ -184,20 +184,20 @@ function display_availables_accounts(){
         echo '<option value='.$id.'>'.$name.'</option>';
       }
       echo '</select>';
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
 }
 
 // ****************************** DISPLAY keyring AVAILABLE ****************************************
 function display_availables_keyrings(){
-    $result = mysql_query( "SELECT * FROM `keyrings` ORDER BY `name` " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query( $GLOBALS['mysql_link'], "SELECT * FROM `keyrings` ORDER BY `name` " )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr =$result->num_rows;
     if(!empty($nr)) {
       echo '<select class="list" name="keyring">';
       echo '<option selected value="0">Please select a keyring</option>';
-      while( $row = mysql_fetch_array( $result ))
+      while( $row = mysqli_fetch_array( $result ))
       {
         // Afecting values
         $name = $row["name"];
@@ -205,7 +205,7 @@ function display_availables_keyrings(){
         echo '<option value='.$id.'>'.$name.'</option>';
       }
       echo '</select>';
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
 }
 
@@ -228,32 +228,32 @@ function get_key_id($name){
 
 // ****************************** GET KEY NAME ****************************************
 function get_key_name($id){
-    $result = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query( $GLOBALS['mysql_link'],"SELECT * FROM `keys` WHERE `id` = '$id' " )
+		or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return('Zombie Key');
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 }
 
 // ****************************** GET ACCOUNT NAME ****************************************
 function get_account_name($id){
-    $result = mysql_query( "SELECT * FROM `accounts` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `accounts` WHERE `id` = '$id' " )
+		or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return('Zombie account');
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 }
@@ -1126,11 +1126,11 @@ function ssh_clean_known_hosts_file($hostname,$ip)
 
 function get_version()
 {
-	$result = mysql_query( "SELECT val FROM `config`" )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
-	$row=mysql_fetch_array($result);
+	$result = mysqli_query($GLOBALS['mysql_link'], "SELECT val FROM `config`" )
+                             or die (mysqli_error()."<br>Couldn't execute query: $query");
+	$row=mysqli_fetch_array($result);
 	$val=$row["val"];
-	mysql_free_result( $result );
+	mysqli_free_result( $result );
 	return($val);
 }
 function recursive_array_search($needle,$haystack) {

@@ -25,7 +25,8 @@ else
     $keyring_id = $_POST['id'];
     $key_id = $_POST['key'];
 
-    mysql_query( "INSERT INTO `keyrings-keys` (`id_keyring`, `id_key`) VALUES('$keyring_id','$key_id')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
+    mysqli_query($GLOBALS['mysql_link'], "INSERT INTO `keyrings-keys` (`id_keyring`, `id_key`) VALUES('$keyring_id','$key_id')" )
+               or die(mysqli_error()."<br>Couldn't execute query: $query");
     header("Location:keyrings.php");
     echo ("key Added, redirecting...");
     exit ();
