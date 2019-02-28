@@ -49,10 +49,10 @@ $smarty->display("decrypt_key.tpl");
 		// We decrypt the key
 		$output = shell_exec("echo \"$passwd\" | ".$gpg_bin." -v --batch --homedir ".
                         $home_of_webserver_account."/.gnupg -u $gpg_user -o ".$home_of_webserver_account."/.ssh/id_rsa "
-                        . "--passphrase-fd 0 --decrypt --pinentry-mode loopback".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
+                        . "--passphrase-fd 0 --decrypt --pinentry-mode loopback ".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
                 // we change permission on the file
 		$output .= shell_exec("chmod 600 ".$home_of_webserver_account."/.ssh/id_rsa");
-                --pinentry-mode loopback
+                
                 // Check if private key exists
                 if (file_exists($home_of_webserver_account."/.ssh/id_rsa")) {
                 	$output .= "Decryption successfull";
