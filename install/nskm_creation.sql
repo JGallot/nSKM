@@ -1,46 +1,37 @@
--- phpMyAdmin SQL Dump
--- version 2.11.3deb1ubuntu1.2
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Mar 17, 2010 at 10:05 AM
--- Server version: 5.0.51
--- PHP Version: 5.2.4-2ubuntu5.10
+-- skm Database creation script
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+-- #SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
 -- Database: `skm`
 --
-DROP DATABASE IF EXISTS `skm`;
-CREATE DATABASE `skm` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `skm`;
 
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ANSI';
-USE skm ;
-DROP PROCEDURE IF EXISTS skm.drop_user_if_exists ;
-DELIMITER $$
-CREATE PROCEDURE skm.drop_user_if_exists()
-BEGIN
-  DECLARE foo BIGINT DEFAULT 0 ;
-  SELECT COUNT(*)
-  INTO foo
-    FROM mysql.user
-      WHERE User = 'skmadmin' and  Host = 'localhost';
-   IF foo > 0 THEN
-         DROP USER 'skmadmin'@'localhost' ;
-  END IF;
-END ;$$
-DELIMITER ;
-CALL skm.drop_user_if_exists() ;
-DROP PROCEDURE IF EXISTS skm.drop_users_if_exists ;
-SET SQL_MODE=@OLD_SQL_MODE ;
+--#SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ANSI';
+--#USE skm ;
+--#DROP PROCEDURE IF EXISTS skm.drop_user_if_exists ;
+--#DELIMITER $$
+--#CREATE PROCEDURE skm.drop_user_if_exists()
+--#BEGIN
+--#-  DECLARE foo BIGINT DEFAULT 0 ;
+--#  SELECT COUNT(*)
+--#  INTO foo
+--#    FROM mysql.user
+--#      WHERE User = 'skmadmin' and  Host = 'localhost';
+--#   IF foo > 0 THEN
+--#         DROP USER 'skmadmin'@'localhost' ;
+--#  END IF;
+--#END ;$$
+--#DELIMITER ;
+--#CALL skm.drop_user_if_exists() ;
 
-CREATE USER 'skmadmin'@'localhost' IDENTIFIED BY 'demo';
+DROP PROCEDURE IF EXISTS drop_users_if_exists ;
+--#SET SQL_MODE=@OLD_SQL_MODE ;
 
-GRANT USAGE ON * . * TO 'skmadmin'@'localhost' IDENTIFIED BY 'demo' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
+--#CREATE USER 'skmadmin'@'localhost' IDENTIFIED BY 'demo';
 
-GRANT ALL PRIVILEGES ON `skm` . * TO 'skmadmin'@'localhost' WITH GRANT OPTION ;
+--#GRANT USAGE ON * . * TO 'skmadmin'@'localhost' IDENTIFIED BY 'demo' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
+
+--#GRANT ALL PRIVILEGES ON `skm` . * TO 'skmadmin'@'localhost' WITH GRANT OPTION ;
 
 -- --------------------------------------------------------
 
@@ -327,6 +318,6 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 CREATE TABLE IF NOT EXISTS `config` (
 `key` varchar(30) character set utf8 collate utf8_unicode_ci NOT NULl,
-`val` varchar(50)aracter set utf8 collate utf8_unicode_ci NOT NULL
+`val` varchar(50) character set utf8 collate utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB;
 
