@@ -21,15 +21,15 @@ if($step != '1')
 else
 {
 	// We will seek all accounts of the servers...
-	$result = mysql_query( "SELECT * FROM `hak` where `id_key`=$id_key ORDER BY `id_host`"  )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($mysql_link, "SELECT * FROM `hak` where `id_key`=$id_key ORDER BY `id_host`"  )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
     $id_lasthost="";
     $id_lastaccount="";
 
     $key_name = get_key_name($id_key); 
     $smarty->assign('key_name',$key_name);
 
-    while( $row = mysql_fetch_array( $result ))
+    while( $row = mysqli_fetch_array( $result ))
     {
 	$line=""; 
 	// We start by seeing if the key exists
@@ -62,38 +62,38 @@ else
 // We will seek all accounts of the Servers that contain the key application...
 // ---------------------------------------------------------------------------------------
 
-$resultkeyring = mysql_query( "SELECT * FROM `keyrings-keys` where `id_key` = '$id_key' ORDER BY `id_keyring`" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
+$resultkeyring = mysqli_query($mysql_link, "SELECT * FROM `keyrings-keys` where `id_key` = '$id_key' ORDER BY `id_keyring`" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
-while ( $rowkeyring = mysql_fetch_array( $resultkeyring ))
+while ( $rowkeyring = mysqli_fetch_array( $resultkeyring ))
 {
 	$id_keyring = $rowkeyring["id_keyring"];
 
-	$result = mysql_query( "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
+	$result = mysqli_query($mysql_link, "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
 	$keyring_name = get_keyring_name($id_keyring); 
 	$keyrings[$id_keyring]["keyring_name"]=get_keyring_name($id_keyring); 
-	$nr = mysql_num_rows( $result );
-    		$lasthostname="";
+	$nr = $result->num_rows;
+        $lasthostname="";
 
-    		while( $row = mysql_fetch_array( $result ))
-    		{
-        		// Afecting values
-			$id_host=$row["id_host"];
-			$id_account=$row["id_account"];
+        while( $row = mysqli_fetch_array( $result ))
+        {
+                // Afecting values
+                $id_host=$row["id_host"];
+                $id_account=$row["id_account"];
 
-			$keyrings[$id_keyring]["id_account"]=$row["id_account"];
+                $keyrings[$id_keyring]["id_account"]=$row["id_account"];
 
-        		$hostname = get_host_name($id_host);
-			if ( $hostname != $lasthostname )
-        		{
-				$keyrings[$id_keyring]['hosts'][$id_host]['hostname']=$hostname;
-				$lasthostname = $hostname;
-			}
-			$account_name=get_account_name($id_account);
-			$keyrings[$id_keyring]['hosts'][$id_host]['accounts'][]=$account_name;
-    		}
+                $hostname = get_host_name($id_host);
+                if ( $hostname != $lasthostname )
+                {
+                        $keyrings[$id_keyring]['hosts'][$id_host]['hostname']=$hostname;
+                        $lasthostname = $hostname;
+                }
+                $account_name=get_account_name($id_account);
+                $keyrings[$id_keyring]['hosts'][$id_host]['accounts'][]=$account_name;
+        }
 }
 if (isset($list2)) $smarty->assign('list2',$keyrings);
 $smarty->display('search_key_securities_list.tpl');

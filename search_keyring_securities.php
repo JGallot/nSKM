@@ -18,11 +18,11 @@ else
 // We will seek all accounts of the servers that contain the keyring application ...
 
 $keyring_name = get_keyring_name($id_keyring); 
-$result = mysql_query( "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
+$result = mysqli_query($mysql_link, "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
  $smarty->assign('keyring_name',$keyring_name);
-    while( $row = mysql_fetch_array( $result ))
+    while( $row = mysqli_fetch_array( $result ))
     {
         // Afecting values
         $id_host = $row["id_host"];

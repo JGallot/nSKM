@@ -77,9 +77,9 @@ if (empty($action))
 
 			// looking for keyrings and keys
 			//------------------------------
-        		$keyrings = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account' and `id_keyring` != '0' " ) or die (mysql_error()."<br>Couldn't execute query: $query");
+        		$keyrings = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account' and `id_keyring` != '0' " ) or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
         		$nr_keyrings = $keyrings->num_rows;
-        		$keys = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account' and `id_key` != '0' " ) or die (mysql_error()."<br>Couldn't execute query: $query");
+        		$keys = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account' and `id_key` != '0' " ) or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
         		$nr_keys = $keys->num_rows;
 
 			// if keyring found
@@ -119,7 +119,7 @@ if (empty($action))
                         			mysqli_free_result( $keys2 );
 					}
 					
-				} //while ( $keyringrow = mysql_fetch_array($keyrings))
+				} //while ( $keyringrow = mysqli_fetch_array($keyrings))
 				mysqli_free_result ( $keyrings );
 			} //if(!empty($nr_keyrings))
 
@@ -130,11 +130,11 @@ if (empty($action))
                                     $tab_accounts[$id_account]["keys"][$keyrow["id_key"]]['indent']='detail3';
                                     $tab_accounts[$id_account]["keys"][$keyrow["id_key"]]['name_key']=get_key_name($keyrow["id_key"]);
 
-                            } //while ( $keyrow = mysql_fetch_array($keys))
+                            } //while ( $keyrow = mysqli_fetch_array($keys))
                             mysqli_free_result ( $keys );
 			} //if(!empty($nr_keys)) 
 		} //if ( $display_account == "N" )
-	  } //while( $keyrow = mysql_fetch_array($accounts))
+	  } //while( $keyrow = mysqli_fetch_array($accounts))
 	  mysqli_free_result( $accounts );
 	} //if(empty($nr_accounts))
 
@@ -149,9 +149,9 @@ else //( empty($action))
     $id = $_GET['id'];
     mysqli_query($mysql_link, "DELETE FROM `hosts` WHERE `id`='$id'" )
 		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
-    mysql_query($mysql_link, "DELETE FROM `hosts-accounts` WHERE `id_host`='$id'" )
+    mysqli_query($mysql_link, "DELETE FROM `hosts-accounts` WHERE `id_host`='$id'" )
 		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
-    mysql_query($mysql_link, "DELETE FROM `hak` WHERE `id_host`='$id'" )
+    mysqli_query($mysql_link, "DELETE FROM `hak` WHERE `id_host`='$id'" )
 		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
     header("Location:hosts-view.php?id_hostgroup=$id_hostgroup");
     exit ();

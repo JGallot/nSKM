@@ -11,10 +11,19 @@ if ($_POST['step']!=1)
     $context = stream_context_create(array (
         'http' => array (
             'header' => 'Authorization: Basic ' . base64_encode("$SKM_REPO_USER:$SKM_REPO_PASS")
-        )
+        ),
+        "ssl"=>array(
+        "verify_peer"=>false,
+        "verify_peer_name"=>false,
+        ),
+
+        
     ));
     // Use FOREMAN API V2 with 1 000 results per page
     $json=file_get_contents($SKM_REPO_URL.'/api/hosts?per_page=1000',false, $context);
+    
+    // TODO : chek errors (dns, etc.)
+    
     $hosts = json_decode($json,true);
 
     foreach ($hosts AS $idex => $host)

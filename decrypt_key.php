@@ -37,7 +37,7 @@ $smarty->display("decrypt_key.tpl");
 	// Validating password
 	$sResult = mysqli_query( $GLOBALS['mysql_link'],"Select id from `security` where `password` = MD5('$passwd')" ) 
 		or die (mysqli_error()."<br>Couldn't execute query: $query");
-	$sNumRow = mysqli_num_rows( $sResult );
+	$sNumRow = $sResult->num_rows;
 
     	if (empty($sNumRow)) {
       		header("location:incorrect_key.php");
@@ -47,10 +47,12 @@ $smarty->display("decrypt_key.tpl");
 		// we encrypt the file with gpg --encrypt $home_of_webserver_account/.ssh/id_rsa and we select user Apache
 
 		// We decrypt the key
-		$output = shell_exec("echo \"$passwd\" | ".$gpg_bin." -v --batch --homedir ".$home_of_webserver_account."/.gnupg -u $gpg_user -o ".$home_of_webserver_account."/.ssh/id_rsa --passphrase-fd 0 --decrypt ".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
+		$output = shell_exec("echo \"$passwd\" | ".$gpg_bin." -v --batch --homedir ".
+                        $home_of_webserver_account."/.gnupg -u $gpg_user -o ".$home_of_webserver_account."/.ssh/id_rsa "
+                        . "--passphrase-fd 0 --decrypt --pinentry-mode loopback".$home_of_webserver_account."/.ssh/id_rsa.gpg 2>&1");
                 // we change permission on the file
 		$output .= shell_exec("chmod 600 ".$home_of_webserver_account."/.ssh/id_rsa");
-                
+                --pinentry-mode loopback
                 // Check if private key exists
                 if (file_exists($home_of_webserver_account."/.ssh/id_rsa")) {
                 	$output .= "Decryption successfull";

@@ -8,10 +8,10 @@ $id = $_GET['id'];
 
 if( empty($id) )
 {
-    $result = mysql_query( "SELECT * FROM `hosts` ORDER BY `name`" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($mysql_link, "SELECT * FROM `hosts` ORDER BY `name`" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
     
-      while( $row = mysql_fetch_array( $result )) 
+      while( $row = mysqli_fetch_array( $result )) 
       {
         // Afecting values
         $name = $row["name"];
@@ -36,13 +36,13 @@ if( empty($id) )
 
         // looking for accounts
 	// --------------------
-        $accounts = mysql_query( "SELECT * FROM `hosts-accounts` WHERE `id_host` = '$id'" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
-        $nr_accounts = mysql_num_rows( $accounts );
+        $accounts = mysqli_query($mysql_link, "SELECT * FROM `hosts-accounts` WHERE `id_host` = '$id'" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+        $nr_accounts = $accounts->num_rows;
         if(empty($nr_accounts)) {
           echo ("<tr><td class='detail2'>No account to deploy</td><td class='detail2'></td></tr>\n");
 	} else {
-	  while ( $keyrow = mysql_fetch_array($accounts))
+	  while ( $keyrow = mysqli_fetch_array($accounts))
 	  {
 	        // Afecting values
 	    	$id_account = $keyrow["id_account"];
@@ -55,31 +55,31 @@ if( empty($id) )
 
 		// looking for keyrings
 		//---------------------
-        	$keyrings = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
-        	$nr_keyrings = mysql_num_rows( $keyrings );
+        	$keyrings = mysqli_query( $mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+        	$nr_keyrings = $keyrings->num_rows;
         	if(empty($nr_keyrings)) {
           		echo ("<tr><td class='detail3'>No keyrings associated</td><td class='detail2'></td></tr>>\n");
 		} else {
-	  		while ( $keyringrow = mysql_fetch_array($keyrings))
+	  		while ( $keyringrow = mysqli_fetch_array($keyrings))
 	  		{
-	    			// Afecting values
-	    			$id_keyring = $keyringrow["id_keyring"];
-            			$name_keyring = get_keyring_name($id_keyring);
+                            // Afecting values
+                            $id_keyring = $keyringrow["id_keyring"];
+                            $name_keyring = get_keyring_name($id_keyring);
 
-	    			// Displaying rows
-				echo("<tr>\n");
-            			echo("  <td class='detail3'><img src='images/keyring_little.gif' border='0'>$name_keyring</td>\n");
-				echo("</tr>\n");
+                            // Displaying rows
+                            echo("<tr>\n");
+                            echo("  <td class='detail3'><img src='images/keyring_little.gif' border='0'>$name_keyring</td>\n");
+                            echo("</tr>\n");
 			}
-			mysql_free_result ( $keyrings );
+			mysqli_free_result ( $keyrings );
 		}
 
 	  }
-	  mysql_free_result( $accounts );
+	  mysqli_free_result( $accounts );
 	} 
       } // END EXPAND
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
 }
 else
@@ -87,21 +87,21 @@ else
   if ( $_GET['action'] == "delete" )
   {
     $id = $_GET['id'];
-    mysql_query( "DELETE FROM `hosts` WHERE `id`='$id'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
-    mysql_query( "DELETE FROM `hosts-accounts` WHERE `id_host`='$id'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
-    mysql_query( "DELETE FROM `hak` WHERE `id_host`='$id'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    mysqli_query( $mysql_link,"DELETE FROM `hosts` WHERE `id`='$id'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+    mysqli_query( $mysql_link,"DELETE FROM `hosts-accounts` WHERE `id_host`='$id'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+    mysqli_query( $mysql_link,"DELETE FROM `hak` WHERE `id_host`='$id'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
   }
   if ( $_GET['action'] == "deleteAccount" )
   {
     $id = $_GET['id'];
     $id_account = $_GET['id_account'];
-    mysql_query( "DELETE FROM `hak` WHERE `id_host`='$id' and `id_account`='$id_account'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
-    mysql_query( "DELETE FROM `hosts-accounts` WHERE `id_host`='$id' and `id_account`='$id_account'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    mysqli_query( $mysql_link,"DELETE FROM `hak` WHERE `id_host`='$id' and `id_account`='$id_account'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+    mysqli_query($mysql_link, "DELETE FROM `hosts-accounts` WHERE `id_host`='$id' and `id_account`='$id_account'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
   }
 
   if ( $_GET['action'] == "deleteKeyring" )
@@ -109,20 +109,20 @@ else
     $id = $_GET['id'];
     $id_account = $_GET['id_account'];
     $id_keyring = $_GET['id_keyring'];
-    mysql_query( "DELETE FROM `hak` WHERE `id_host`='$id' and `id_account`='$id_account' and `id_keyring`='$id_keyring'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    mysqli_query( $mysql_link,"DELETE FROM `hak` WHERE `id_host`='$id' and `id_account`='$id_account' and `id_keyring`='$id_keyring'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
   }
   if ( $_GET['action'] == "expand" )
   {
     $id = $_GET['id'];
-    mysql_query( "UPDATE `hosts` SET `expand` = 'Y' WHERE `id`='$id'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    mysqli_query($mysql_link, "UPDATE `hosts` SET `expand` = 'Y' WHERE `id`='$id'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
   }
   if ( $_GET['action'] == "collapse" )
   {
     $id = $_GET['id'];
-    mysql_query( "UPDATE `hosts` SET `expand` = 'N' WHERE `id`='$id'" )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    mysqli_query($mysql_link, "UPDATE `hosts` SET `expand` = 'N' WHERE `id`='$id'" )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
   }
 
   header("Location:deploy.php");

@@ -18,7 +18,7 @@ else
 {
   if ( $_GET['action'] == "delete" )
   {
-    mysql_query( "DELETE FROM `groups` WHERE `id`='$id'" );
+    mysqli_query($mysql_link, "DELETE FROM `groups` WHERE `id`='$id'" );
     // Let's go back to the Reminder List page
     header("Location:groups.php");
     exit ();
