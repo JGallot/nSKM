@@ -22,21 +22,21 @@ if (isset($_GET["action"])) $action = $_GET["action"]; else $action = "";
 
 $smarty->assign("title","All Hosts Overview");
 
-$result = mysql_query( "SELECT COUNT(*) AS total FROM `hosts`" )
-    or die (mysql_error()."<br>Couldn't execute query: $query");
-$nr = mysql_num_rows( $result );
+$result = mysqli_query($GLOBALS['mysql_link'], "SELECT COUNT(*) AS total FROM `hosts`" )
+    or die (mysqli_error()."<br>Couldn't execute query: $query");
+$nr =$result->num_rows ;
 if(!empty($nr)) 
 {
-    $row = mysql_fetch_array( $result );
+    $row = mysqli_fetch_array( $result );
     $nb_pages  = ceil($row['total'] / $nombreDeElementsParPage);
 }
 else 
     $nb_pages = 0;
 
-$result = mysql_query( "SELECT * FROM `hosts` ORDER BY `name` LIMIT $premierElementAAfficher, $nombreDeElementsParPage " )
-    or die (mysql_error()."<br>Couldn't execute query: $query");
+$result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `hosts` ORDER BY `name` LIMIT $premierElementAAfficher, $nombreDeElementsParPage " )
+    or die (mysqli_error()."<br>Couldn't execute query: $query");
 
-$nr = mysql_num_rows( $result );
+$nr =  $result->num_rows ;
 if(empty($nr)) 
 {
 	echo("No hosts found ...\n");
@@ -44,7 +44,7 @@ if(empty($nr))
 else 
 {
       $odd=1;
-      while( $row = mysql_fetch_array( $result )) 
+      while( $row = mysqli_fetch_array( $result )) 
       {
         $id 			= $row["id"];
 	$hosts[$id]['name']	= $row["name"];

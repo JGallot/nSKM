@@ -19,14 +19,14 @@ if(isset($_GET["id_hostgroup"]))
     if ( $aix == "Y" ) $SQLQUERY = "$SQLQUERY AND `ostype` = 'AIX'";
     if ( $rhel == "Y" ) $SQLQUERY = "$SQLQUERY AND `ostype` = 'RHEL'";
     if ( $solaris == "Y" ) $SQLQUERY = "$SQLQUERY AND `ostype` = 'solaris'";
-    $result = mysql_query( $SQLQUERY )
-      or die (mysql_error()."<br>Couldn't execute query: $SQLQUERY");
+    $result = mysqli_query( $GLOBALS['mysql_link'], $SQLQUERY )
+      or die (mysqli_error()."<br>Couldn't execute query: $SQLQUERY");
     
-    $nr = mysql_num_rows( $result );
+    $nr =$result->num_rows;
     if(!empty($nr)) {
 
 	$odd=1;
-      while( $row = mysql_fetch_array( $result )) 
+      while( $row = mysqli_fetch_array( $result )) 
       {
         $id = $row["id"];
 	$hostgroup[$id]["ip"]=$row["ip"];
@@ -60,7 +60,7 @@ if(isset($_GET["id_hostgroup"]))
 
       }
 
-      mysql_free_result( $result );
+      mysqli_free_result( $result );
     }
 	if (!isset($hostgroup)) $hostgroup=0;
 	$smarty->assign("hostgroup",$hostgroup);

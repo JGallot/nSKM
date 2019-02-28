@@ -12,10 +12,10 @@ $smarty->assign("id",$id);
 
 if (empty($action))
 { 
-      $result = mysql_query( "SELECT * FROM `hosts` where `id_group` = '$id_hostgroup' AND `id`='$id'" )
+      $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `hosts` where `id_group` = '$id_hostgroup' AND `id`='$id'" )
                          or die (mysql_error()."<br>Couldn't execute query: $query");
-      $nr = mysql_num_rows( $result );
-      $row = mysql_fetch_array( $result ); 
+      $nr = $result->num_rows;
+      $row = mysqli_fetch_array( $result ); 
       // Afecting values
       $name = $row["name"];
       $id = $row["id"];

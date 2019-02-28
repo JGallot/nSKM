@@ -28,7 +28,7 @@ else
     // this is a new reminder
       $name = $_POST['name'];
       // No error let's add the entry
-      mysql_query( "INSERT INTO `groups` (`name`) VALUES('$name')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
+      mysqli_query( $GLOBALS['mysql_link'], "INSERT INTO `groups` (`name`) VALUES('$name')" ) or die(mysqli_error()."<br>Couldn't execute query: $query");
       // Let's go to the Reminder List page
       //if (empty($_POST['called']))
       //  header("Location:reminder_list.php");
@@ -39,7 +39,7 @@ else
       // We modify an existing reminder
       // setting the variable for the update
       $name = $_POST['name'];
-      mysql_query( "UPDATE `groups` SET `name` = '$name' WHERE `id` = '$id' " );
+      mysqli_query($GLOBALS['mysql_link'], "UPDATE `groups` SET `name` = '$name' WHERE `id` = '$id' " );
       // Let's go to the Reminder List page
       header("Location:groups.php");
       exit ();
