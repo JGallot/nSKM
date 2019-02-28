@@ -11,19 +11,18 @@ if (isset($_POST["step"])) $step = $_POST["step"]; else $step = "";
 
 if($step != '1')
 {
+    $smarty->assign('title',"Hosts - accounts - Key Association");
 
-$smarty->assign('title',"Hosts - accounts - Key Association");
+    $smarty->assign('host_name',$host_name);
+    $smarty->assign('id_account',$id_account);
+    $smarty->assign('account_name',$account_name);
+    $smarty->assign('id_hostgroup',$id_hostgroup);
+    $smarty->assign('id',$id);
 
-$smarty->assign('host_name',$host_name);
-$smarty->assign('id_account',$id_account);
-$smarty->assign('account_name',$account_name);
-$smarty->assign('id_hostgroup',$id_hostgroup);
-$smarty->assign('id',$id);
-
-        // Display
-        $all_keys=get_available_keys();
-        $smarty->assign("allkeys",$all_keys);
-        $smarty->display('hakk_setup.tpl');
+    // Display
+    $all_keys=get_available_keys();
+    $smarty->assign("allkeys",$all_keys);
+    $smarty->display('hakk_setup.tpl');
 }
 else
 {
@@ -39,7 +38,8 @@ else
     //echo ("Keyring id = $keyring_id, key id = $key_id");
     //die ("We stop here");
 
-    mysql_query( "INSERT INTO `hak` (`id_host`, `id_account`, `id_key`,`expand`) VALUES('$host_id','$account_id','$key_id','Y')" ) or die(mysql_error()."<br>Couldn't execute query: insert host_id=$host_id, account_id=$account_id, key_id=$key_id [$query]");
+    mysqli_query($mysql_link, "INSERT INTO `hak` (`id_host`, `id_account`, `id_key`,`expand`) VALUES('$host_id','$account_id','$key_id','Y')" )
+            or die(mysqli_error($mysql_link)."<br>Couldn't execute query: insert host_id=$host_id, account_id=$account_id, key_id=$key_id [$query]");
     header("Location:host-view.php?id_hostgroup=$id_hostgroup&id=$host_id");
     echo ("key Added, redirecting...");
     exit ();

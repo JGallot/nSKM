@@ -32,7 +32,7 @@ else
     if(empty($id)){
     // this is a new keyring
       // No error let's add the entry
-      mysqli_query($mysql_link,  "INSERT INTO `keyrings` (`name` ) VALUES('$name')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
+      mysqli_query($mysql_link,  "INSERT INTO `keyrings` (`name` ) VALUES('$name')" ) or die(mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
       header("Location:keyrings.php");
       echo ("keyring Added, redirecting...");
       exit ();

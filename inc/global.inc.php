@@ -18,4 +18,6 @@ $smarty->assign('SKM_REPO_URL',$SKM_REPO_URL);
 $smarty->assign("menu_hostgrps",$hostgroups);
 $smarty->assign("app_version",$app_version);
 
+$mysql_link=$GLOBALS['mysql_link'];
+
 ?>

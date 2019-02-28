@@ -113,7 +113,7 @@ function get_group_name($id_hostgroup){
 
     //Display the selection box for the groups
     $result = mysqli_query($GLOBALS['mysql_link'], "SELECT name FROM `groups` WHERE `id`='$id_hostgroup' " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
+                             or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
     $nr = $result->num_rows;
     if(empty($nr)) {
       return ('No group assigned');
@@ -127,17 +127,18 @@ function get_group_name($id_hostgroup){
 }
 
 function get_direction_name($id){
+    $mysql_link=$GLOBALS['mysql_link'];
 
     //Display the selection box for the groups
-    $result = mysql_query( "SELECT name FROM `direction` WHERE `id`='$id' " )
-                             or die (mysql_error()."<br>Couldn't execute query: $query");
-    $nr = mysql_num_rows($result);
+    $result = mysqli_query($mysql_link, "SELECT name FROM `direction` WHERE `id`='$id' " )
+                             or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+    $nr = $result->num_rows;
     if(empty($nr)) {
       echo 'No direction found...';
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 
@@ -145,11 +146,12 @@ function get_direction_name($id){
 
 // ****************************** DISPLAY KEY AVAILABLE ****************************************
 function get_available_keys(){
+    $mysql_link=$GLOBALS['mysql_link'];
 
     $res=array();
     //Display the selection box for the keys
-    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `keys` ORDER BY `name` " )
-                             or die (mysqli_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query($mysql_link, "SELECT * FROM `keys` ORDER BY `name` " )
+                             or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
     $nr = $result->num_rows;
     if(!empty($nr)) {
@@ -167,8 +169,10 @@ function get_available_keys(){
 
 // ****************************** DISPLAY ACCOUNT AVAILABLE ****************************************
 function display_availables_accounts(){
-    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `accounts` ORDER BY `name` " )
-                             or die (mysqli_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "SELECT * FROM `accounts` ORDER BY `name` " )
+                             or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
     $nr = $result->num_rows;
     if(empty($nr)) {
@@ -190,8 +194,10 @@ function display_availables_accounts(){
 
 // ****************************** DISPLAY keyring AVAILABLE ****************************************
 function display_availables_keyrings(){
-    $result = mysqli_query( $GLOBALS['mysql_link'], "SELECT * FROM `keyrings` ORDER BY `name` " )
-                             or die (mysqli_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "SELECT * FROM `keyrings` ORDER BY `name` " )
+                             or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
     $nr =$result->num_rows;
     if(!empty($nr)) {
@@ -212,16 +218,16 @@ function display_availables_keyrings(){
 
 // ****************************** GET KEY ID ****************************************
 function get_key_id($name){
-    $result = mysql_query( "SELECT * FROM `keys` WHERE `name` = '$name' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $result = mysqli_query( "SELECT * FROM `keys` WHERE `name` = '$name' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       echo 'No key found...';
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['id'];
     }
 }
@@ -244,8 +250,9 @@ function get_key_name($id){
 
 // ****************************** GET ACCOUNT NAME ****************************************
 function get_account_name($id){
-    $result = mysqli_query($GLOBALS['mysql_link'], "SELECT * FROM `accounts` WHERE `id` = '$id' " )
-		or die (mysqli_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
+    $result = mysqli_query($mysql_link, "SELECT * FROM `accounts` WHERE `id` = '$id' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
     $nr = $result->num_rows;
     if(empty($nr)) {
@@ -359,31 +366,35 @@ function get_host_ip($id){
 
 // ****************************** GET HOST SSH PORT ****************************************
 function get_host_ssh_port($id){
-    $result = mysql_query( "SELECT `ssh_port`,`name` FROM `hosts` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
 
-    $nr = mysql_num_rows($result);
+    $result = mysqli_query($mysql_link, "SELECT `ssh_port`,`name` FROM `hosts` WHERE `id` = '$id' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return 22;
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['ssh_port'];
     }
 }
 
 // ****************************** GET ALL HOSTS INFORMATION ****************************************
 function get_all_hosts(){
-    $result = mysql_query( "SELECT *  FROM `hosts` ORDER BY `name` " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "SELECT *  FROM `hosts` ORDER BY `name` " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
 
     $nb=0;
-    $nr = mysql_num_rows($result);
+    $nr = $result->num_rows;
     if(empty($nr)) {
       return(array());
     } else {
-        while( $row = mysql_fetch_array($result))
+        while( $row = mysqli_fetch_array($result))
         {
           $id=$row['id'];
           $hosts [$id]['name'] = $row['name'];
@@ -392,23 +403,25 @@ function get_all_hosts(){
           $hosts [$id]['serialno'] = $row['serialno'];
 
         }
-        mysql_free_result( $result );
+        mysqli_free_result( $result );
         return ($hosts);
     }
 }
 
 // ****************************** GET ACCOUNT NAME ****************************************
 function get_gfile_name($id){
-    $result = mysql_query( "SELECT * FROM `globalfiles` WHERE `id` = '$id' " )
-		or die (mysql_error()."<br>Couldn't execute query: $query");
+    $mysql_link=$GLOBALS['mysql_link'];
 
-    $nr = mysql_num_rows($result);
+    $result = mysqli_query($mysql_link, "SELECT * FROM `globalfiles` WHERE `id` = '$id' " )
+		or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+
+    $nr = $result->num_rows;
     if(empty($nr)) {
       echo 'No host found...';
     }
     else {
-      $row = mysql_fetch_array( $result );
-      mysql_free_result( $result );
+      $row = mysqli_fetch_array( $result );
+      mysqli_free_result( $result );
       return $row['name'];
     }
 }
@@ -416,7 +429,7 @@ function get_gfile_name($id){
 // ********************************* DISPLAY MENY *****************************************
 
 function prepare_authorizedkey_file($id,$id_account,$id_run){
-    
+        $mysql_link=$GLOBALS['mysql_link'];
 	global $SKM_AUTH_MSG;
         // Initialising variables
         $hostname = get_host_name($id);
@@ -431,12 +444,12 @@ function prepare_authorizedkey_file($id,$id_account,$id_run){
         // -----------------------------------------------
         // We get all keys associated with current keyring/account
         // -----------------------------------------------
-        $keyrings = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
+        $keyrings = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
                                   and `id_keyring` != '0'" )
-                 or die (mysql_error()."<br>Couldn't execute query: $query");
-        $nr_keyrings = mysql_num_rows( $keyrings );
+                 or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+        $nr_keyrings = $keyrings->num_rows;
         if(!empty($nr_keyrings)) {
-                while ( $keyringrow = mysql_fetch_array($keyrings))
+                while ( $keyringrow = mysqli_fetch_array($keyrings))
                 {
                         $id_keyring = $keyringrow['id_keyring'];
                         $name_keyring = get_keyring_name($id_keyring);
@@ -444,11 +457,11 @@ function prepare_authorizedkey_file($id,$id_account,$id_run){
 
                         // Getting the keys associated to current keyring
                         //echo("Select from keyrings-keys id_keyring=$id_keyring\n");
-                        $keys = mysql_query( "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
-                                or die (mysql_error()."<br>Couldn't execute query: $query");
-                        $nr_keys = mysql_num_rows( $keys );
+                        $keys = mysqli_query($mysql_link, "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
+                                or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                        $nr_keys = $keys->num_rows;
                         if (!empty($nr_keys)) {
-                            while ( $keyrow = mysql_fetch_array($keys))
+                            while ( $keyrow = mysqli_fetch_array($keys))
                             {
                                     $key_id = $keyrow['id_key'];
                                     $key_name = get_key_name($key_id);
@@ -456,50 +469,50 @@ function prepare_authorizedkey_file($id,$id_account,$id_run){
 
 
                                     // Getting key value of current key
-                                    $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
-                                            or die (mysql_error()."<br>Couldn't execute query: $query");
-                                    $nr_keyvalue = mysql_num_rows( $keyvalue );
+                                    $keyvalue = mysqli_query($mysql_link, "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
+                                            or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                                    $nr_keyvalue = $keyvalue->num_rows;
                                     if (!empty($nr_keyvalue)) {
-                                            while ($keyvaluerow  = mysql_fetch_array($keyvalue))
-                                            {
-                                                    $singlekey = trim($keyvaluerow['key']);
-                                                    $authorized_keys.= "$singlekey\n";
-                                            }
+                                        while ($keyvaluerow  = mysqli_fetch_array($keyvalue))
+                                        {
+                                                $singlekey = trim($keyvaluerow['key']);
+                                                $authorized_keys.= "$singlekey\n";
+                                        }
                                     } // end if
                             } // end while keyrow
-                            mysql_free_result($keys);
+                            mysqli_free_result($keys);
                         } //end if
                 } // end while keyringrow
-                mysql_free_result($keyrings);
+                mysqli_free_result($keyrings);
         } // end if
 
         // -----------------------------------------------
         // We get all keys associated with current account/host
         // -----------------------------------------------
-        $keys = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
+        $keys = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
                                   and `id_key` != '0'" )
-                 or die (mysql_error()."<br>Couldn't execute query: $query");
-        $nr_keys = mysql_num_rows( $keys );
+                 or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+        $nr_keys = $keys->num_rows;
         if(!empty($nr_keys)) {
-                while ( $keyrow = mysql_fetch_array($keys))
+                while ( $keyrow = mysqli_fetch_array($keys))
                 {
                    $key_id = $keyrow['id_key'];
                    $key_name = get_key_name($key_id);
                    $message.="  <img src='images/ok.gif'>adding key $key_name (id $key_id)<br>\n";
 
                    // Getting key value of current key
-                   $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
-                               or die (mysql_error()."<br>Couldn't execute query: $query");
-                   $nr_keyvalue = mysql_num_rows( $keyvalue );
+                   $keyvalue = mysqli_query($mysql_link, "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
+                               or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                   $nr_keyvalue = $keyvalue->num_rows;
                    if (!empty($nr_keyvalue)) {
-                      while ($keyvaluerow  = mysql_fetch_array($keyvalue))
+                      while ($keyvaluerow  = mysqli_fetch_array($keyvalue))
                       {
                         $singlekey = $keyvaluerow['key'];
                         $authorized_keys.= "$singlekey\n";
                       }
                     } // end if
                   } // end while keyrow
-                  mysql_free_result($keys);
+                  mysqli_free_result($keys);
           } //end if
         $tmp_file="/tmp/skm_tmp_authorized_keys.$id.$id_account.$id_run";
         $handle = fopen($tmp_file,"w");
@@ -510,6 +523,8 @@ function prepare_authorizedkey_file($id,$id_account,$id_run){
 }
 
 Function view_authorizedkey_file($id,$id_account){
+        $mysql_link=$GLOBALS['mysql_link'];
+
         // Initialising variables
         $hostname = get_host_name($id);
         $account_name = get_account_name($id_account);
@@ -521,12 +536,12 @@ Function view_authorizedkey_file($id,$id_account){
 		// -----------------------------------------------
 	        // We get all keys associated with current keyring
 		// -----------------------------------------------
-                $keyrings = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
+                $keyrings = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
                                           and `id_keyring` != '0'" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
-                $nr_keyrings = mysql_num_rows( $keyrings );
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                $nr_keyrings = $keyrings->num_rows;
                 if(!empty($nr_keyrings)) {
-                        while ( $keyringrow = mysql_fetch_array($keyrings))
+                        while ( $keyringrow = mysqli_fetch_array($keyrings))
                         {
                                 $id_keyring = $keyringrow['id_keyring'];
                                 $name_keyring = get_keyring_name($id_keyring);
@@ -534,11 +549,11 @@ Function view_authorizedkey_file($id,$id_account){
 
                                 // Getting the keys associated to current keyring
                                 //echo("Select from keyrings-keys id_keyring=$id_keyring\n");
-                                $keys = mysql_query( "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
-                                        or die (mysql_error()."<br>Couldn't execute query: $query");
-                                $nr_keys = mysql_num_rows( $keys );
+                                $keys = mysqli_query($mysql_link, "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
+                                        or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                                $nr_keys = $keys->num_rows;
                                 if (!empty($nr_keys)) {
-                                        while ( $keyrow = mysql_fetch_array($keys))
+                                        while ( $keyrow = mysqli_fetch_array($keys))
                                         {
                                                 $key_id = $keyrow['id_key'];
                                                 $key_name = get_key_name($key_id);
@@ -546,50 +561,50 @@ Function view_authorizedkey_file($id,$id_account){
 
 
                                                 // Getting key value of current key
-                                                $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
-                                                        or die (mysql_error()."<br>Couldn't execute query: $query");
-                                                $nr_keyvalue = mysql_num_rows( $keyvalue );
+                                                $keyvalue = mysqli_query($mysql_link, "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
+                                                        or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                                                $nr_keyvalue = $keyvalue->num_rows;
                                                 if (!empty($nr_keyvalue)) {
-                                                        while ($keyvaluerow  = mysql_fetch_array($keyvalue))
+                                                        while ($keyvaluerow  = mysqli_fetch_array($keyvalue))
                                                         {
                                                                 $singlekey = $keyvaluerow['key'];
                                                                 $authorized_keys.= "$singlekey<br>\n";
                                                         }
                                                 } // end if
                                         } // end while keyrow
-                                        mysql_free_result($keys);
+                                        mysqli_free_result($keys);
                                 } //end if
                         } // end while keyringrow
-                        mysql_free_result($keyrings);
+                        mysqli_free_result($keyrings);
                 } // end if
 
 		// -----------------------------------------------
 	        // We get all keys associated with current account/host
 		// -----------------------------------------------
-                $keys = mysql_query( "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
+                $keys = mysqli_query($mysql_link, "SELECT * FROM `hak` WHERE `id_host` = '$id' and `id_account` ='$id_account'
                                           and `id_key` != '0'" )
-                         or die (mysql_error()."<br>Couldn't execute query: $query");
-                $nr_keys = mysql_num_rows( $keys );
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                $nr_keys = $keys->num_rows;
                 if(!empty($nr_keys)) {
-                        while ( $keyrow = mysql_fetch_array($keys))
+                        while ( $keyrow = mysqli_fetch_array($keys))
                         {
                            $key_id = $keyrow['id_key'];
                            $key_name = get_key_name($key_id);
                            $message.="  <img src='images/ok.gif'>adding key $key_name (id $key_id)<br>\n";
 
                            // Getting key value of current key
-                           $keyvalue = mysql_query( "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
-                                       or die (mysql_error()."<br>Couldn't execute query: $query");
-                           $nr_keyvalue = mysql_num_rows( $keyvalue );
+                           $keyvalue = mysqli_query($mysql_link, "SELECT * FROM `keys` WHERE `id` = '$key_id'" )
+                                       or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+                           $nr_keyvalue = $keyvalue->num_rows;
                            if (!empty($nr_keyvalue)) {
-                              while ($keyvaluerow  = mysql_fetch_array($keyvalue))
+                              while ($keyvaluerow  = mysqli_fetch_array($keyvalue))
                               {
                                 $singlekey = $keyvaluerow['key'];
                                 $authorized_keys.= "$singlekey\n";
                               }
                             } // end if
                           } // end while keyrow
-                          mysql_free_result($keys);
+                          mysqli_free_result($keys);
                   } //end if
 
         $handle = fopen("/tmp/skm_new_authorized_keys.$id_run","w");
@@ -956,7 +971,7 @@ function display_key($id_host,$id_account,$id_key,$id_hostgroup,$ident_level){
 function display_keyring($id_host,$id_account,$id_keyring,$id_hostgroup,$ident_level,$display){
 	// ident_level : level of identation to display element
 	// display (Y/N) : display keys in current keyring
-
+        $mysql_link=$GLOBALS['mysql_link'];
 
         $name_keyring = get_keyring_name($id_keyring);
 
@@ -975,21 +990,21 @@ function display_keyring($id_host,$id_account,$id_keyring,$id_hostgroup,$ident_l
 
 
 		// looking for keys
-		$keys = mysql_query( "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
-		       or die (mysql_error()."<br>Couldn't execute query: $query");
-		$nr_keys = mysql_num_rows( $keys );
+		$keys = mysqli_query($mysql_link, "SELECT * FROM `keyrings-keys` WHERE `id_keyring` = '$id_keyring'" )
+		       or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+		$nr_keys = $keys->num_rows;
 		if(empty($nr_keys)) {
 			//echo ("<tr><td class='$ident_level'>No keys associated</td><td class='$ident_level'></td></tr>\n");
 			echo ("<tr><td class='$ident_level'>No keys associated</td></tr>\n");
 		} else {
-			while ( $keyrow = mysql_fetch_array($keys))
+			while ( $keyrow = mysqli_fetch_array($keys))
 			{
-				// Afecting values
-				//$name = $keyrow["name"];
-				$id_key = $keyrow["id_key"];
-				display_key($id_host,$id_account,$id_key,$id_hostgroup,$ident_level);
+                            // Afecting values
+                            //$name = $keyrow["name"];
+                            $id_key = $keyrow["id_key"];
+                            display_key($id_host,$id_account,$id_key,$id_hostgroup,$ident_level);
 			} // end while
-			mysql_free_result( $keys );
+			mysqli_free_result( $keys );
 		} //end if
 	} //end if
 } 
@@ -1037,21 +1052,22 @@ function test_presence($host,$file,$ssh_port=22){
 
 // ********************************* DEPLOY GLOBALFILE *****************************************
 function deploy_globalfile($id_file,$id_host){
-	$hostname = get_host_name($id_host);
+        $mysql_link=$GLOBALS['mysql_link'];
+	
+        $hostname = get_host_name($id_host);
 	$hostip = get_host_ip($id_host);
 	$ssh_port = get_host_ssh_port($id_host);
         
         $opts="$ssh_port -o ConnectTimeout=".$GLOBALS['ssh_timeout'];
         $opts_ssh="-p $opts";
-        
-        
-        $gfiles = mysql_query( "SELECT * FROM `globalfiles` WHERE `id` = '$id_file'" )
-                    or die (mysql_error()."<br>Couldn't execute query: $query");
-        $nr_gbfiles = mysql_num_rows( $gfiles );
+                
+        $gfiles = mysqli_query($mysql_link, "SELECT * FROM `globalfiles` WHERE `id` = '$id_file'" )
+                    or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+        $nr_gbfiles = $gfiles->num_rows;
         if(!empty($nr_gbfiles)) {
 
 		// Preparing file,path, etc...
-		$gfilerow = mysql_fetch_array($gfiles);
+		$gfilerow = mysqli_fetch_array($gfiles);
 		$path=$gfilerow['path'];
 		$name=$gfilerow['name'];
 		//$filecontents=$gfilerow['text'];
@@ -1129,12 +1145,14 @@ function ssh_clean_known_hosts_file($hostname,$ip)
 
 function get_version()
 {
-	$result = mysqli_query($GLOBALS['mysql_link'], "SELECT val FROM `config`" )
-                             or die (mysqli_error()."<br>Couldn't execute query: $query");
-	$row=mysqli_fetch_array($result);
-	$val=$row["val"];
-	mysqli_free_result( $result );
-	return($val);
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "SELECT val FROM `config`" )
+                         or die (mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
+    $row=mysqli_fetch_array($result);
+    $val=$row["val"];
+    mysqli_free_result( $result );
+    return($val);
 }
 function recursive_array_search($needle,$haystack) {
     foreach($haystack as $key=>$value) {
@@ -1162,10 +1180,12 @@ function delete_account()
 
 function delete_host_accounts($id_host)
 {
-    $result = mysql_query( "DELETE FROM `hosts-accounts` WHERE `id_host`='$id_host';" );
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "DELETE FROM `hosts-accounts` WHERE `id_host`='$id_host';" );
     if (!isset($result)) {
-        $err=mysql_error();
-        mysql_free_result($result);
+        $err=mysqli_error($mysql_link);
+        mysqli_free_result($result);
         return($err);
     }
 }
@@ -1178,10 +1198,12 @@ function delete_host_accounts($id_host)
 //      - error string if deletion failed
 function delete_host_keys_keyrings($id_host)
 {
-    $result = mysql_query( "DELETE FROM `hak` WHERE `id_host`='$id_host';" );
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "DELETE FROM `hak` WHERE `id_host`='$id_host';" );
     if (!isset($result)) {
-        $err=mysql_error();
-        mysql_free_result($result);
+        $err=mysqli_error($mysql_link);
+        mysqli_free_result($result);
         return($err);
     }
 }
@@ -1194,6 +1216,8 @@ function delete_host_keys_keyrings($id_host)
 //      - error string if deletion failed
 function delete_host($id_host)
 {
+    $mysql_link=$GLOBALS['mysql_link'];
+
     // First delete accounts
     $res_del_a=delete_host_accounts($id_host);
     if ($res_del_a) {
@@ -1207,11 +1231,11 @@ function delete_host($id_host)
         return($res_del_k);
     }
     // So accounts and keys association are deleted, we can delete host
-     $result = mysql_query( "DELETE FROM `hosts` WHERE `id`='$id_host';" );
+     $result = mysqli_query($mysql_link, "DELETE FROM `hosts` WHERE `id`='$id_host';" );
     if (!$result) {
-        $err=mysql_error();
-        echo "--".mysql_error()."--";
-        mysql_free_result($result);
+        $err=mysqli_error($mysql_link);
+        echo "--".mysqli_error($mysql_link)."--";
+        mysqli_free_result($result);
         return($err);
     }
     // If job is completed, NULL is send
@@ -1228,7 +1252,9 @@ function add_host($hostname,$ip='',$id_group='',$serialno='',$memory='',$osversi
         $maint_cost='',$maint_po='',$maint_provider='',$maint_end_dt='',$life_end_dt='',$ostype='',
         $osvers='',$intf1='',$intf2='',$defaultgw='',$monitor='',$selinux='',$datechgroot='')
 {
-      $result = mysql_query( "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,"
+    $mysql_link=$GLOBALS['mysql_link'];
+
+    $result = mysqli_query($mysql_link, "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,"
               . "`uloc`,`cageno`,`model`,`procno`,`provider`,`install_dt`,`po`,`cost`,`maint_cost`,`maint_po`,"
               . "`maint_provider`,`maint_end_dt`,`life_end_dt`,`ostype`,`osvers`,`intf1`,`intf2`,`defaultgw`,"
               . "`monitor`,`selinux`,`datechgroot`) "
@@ -1238,27 +1264,27 @@ function add_host($hostname,$ip='',$id_group='',$serialno='',$memory='',$osversi
               . "'$intf1','$intf2','$defaultgw','$monitor','$selinux','$datechgroot')" );
  
     if (!$result) {
-        $err=mysql_error();
-        echo "--".mysql_error()."--";
-        mysql_free_result($result);
+        $err=mysqli_error($mysql_link);
+        echo "--".mysqli_error($mysql_link)."--";
+        mysqli_free_result($result);
         return($err);
      }
-    $id = mysql_insert_id();
+    $id = mysqli_insert_id();
 
     // add account root (id 1) to created host
-    $result = mysql_query("INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('$id','1')");
+    $result = mysqli_query($mysql_link,"INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('$id','1')");
    if (!$result) {
-        $err=mysql_error();
-        echo "--".mysql_error()."--";
-        mysql_free_result($result);
+        $err=mysqli_error($mysql_link);
+        echo "--".mysqli_error($mysql_link)."--";
+        mysqli_free_result($result);
         return($err);
      }
     // add SKM Public Key (id 1) for user root on created host
-    $result = mysql_query("INSERT INTO `hak` (`id_host`,`id_account`,`id_key`) VALUES ('$id','1','1')");
+    $result = mysqli_query($mysql_link, "INSERT INTO `hak` (`id_host`,`id_account`,`id_key`) VALUES ('$id','1','1')");
     if (!$result) {
-        $err=mysql_error();
-        echo "--".mysql_error()."--";
-        mysql_free_result($result);
+        $err=mysqli_error($mysql_link);
+        echo "--".mysqli_error($mysql_link)."--";
+        mysqli_free_result($result);
         return($err);
      }   
 }

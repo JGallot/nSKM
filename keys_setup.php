@@ -39,7 +39,7 @@ $error_list = "";
 
         if(empty($id)){
           // No error let's add the entry
-          mysqli_query($mysql_link, "INSERT INTO `keys` (`name`, `key`) VALUES('$name','$key')" ) or die(mysql_error()."<br>Couldn't execute query: $query");
+          mysqli_query($mysql_link, "INSERT INTO `keys` (`name`, `key`) VALUES('$name','$key')" ) or die(mysqli_error($mysql_link)."<br>Couldn't execute query: $query");
           header("Location:keys.php");
           echo ("Reminder Added, redirecting...");
           exit ();

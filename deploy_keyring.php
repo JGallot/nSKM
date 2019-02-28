@@ -19,7 +19,8 @@ $output1='';
 $output2='';
 
 $id_run=rand();
-
+$mysql_link=$GLOBALS['mysql_link'];
+        
 if (empty($id_keyring))
 {
     // If no keyring specify, display keyrings' list
@@ -33,12 +34,12 @@ else
     {
         $keyring_name = get_keyring_name($id_keyring);
 
-          $result = mysql_query( "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
-                               or die (mysql_error()."<br>Couldn't execute query: $query");
-          $nr = mysql_num_rows( $result );
+          $result = mysqli_query($link, "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
+                               or die (mysqli_error()."<br>Couldn't execute query: $query");
+          $nr = $result->num_rows;
 
           $output='';
-          while( $row = mysql_fetch_array( $result ))
+          while( $row = mysqli_fetch_array( $result ))
           {
                 // Affecting values
                 $id_host = $row['id_host'];
@@ -108,7 +109,6 @@ else
             foreach ($img as $key=>$value) {
                 $mime->addHTMLImage("images/$value.gif","image/gif");
             }
-            
             
             $hdrs = array(
                   'From'    => "SKM <".$email_from.">",

@@ -7,26 +7,26 @@ $smarty->assign("title","Deployment process");
 $id = $_GET['id'];
 $id_account = $_GET['id_account'];
 $id_hostgroup = $_GET['id_hostgroup'];
-
+$id_run=rand();
 
 if(!empty($id) and !empty($id_account))
 {
-$smarty->assign('id',$id);
-$smarty->assign('id_hostgroup',$id_hostgroup);
+    $smarty->assign('id',$id);
+    $smarty->assign('id_hostgroup',$id_hostgroup);
 
-$hostname = get_host_name($id);
-$account_name = get_account_name($id_account); 
+    $hostname = get_host_name($id);
+    $account_name = get_account_name($id_account); 
 
-$smarty->assign('hostname',$hostname);
-$smarty->assign('account_name',$account_name);
+    $smarty->assign('hostname',$hostname);
+    $smarty->assign('account_name',$account_name);
 
-$output = prepare_authorizedkey_file($id,$id_account); 
-$smarty->assign('output1',$output);
+    $output = prepare_authorizedkey_file($id,$id_account,$id_run); 
+    $smarty->assign('output1',$output);
 
-$output = view_authorizedkey_file($id,$id_account); 
-$smarty->assign('output2',$output);
+    $output = view_authorizedkey_file($id,$id_account,$id_run); 
+    $smarty->assign('output2',$output);
 
-$smarty->display('view_aut_account.tpl');
+    $smarty->display('view_aut_account.tpl');
 }
 
 ?>
