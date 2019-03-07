@@ -13,7 +13,7 @@ if($step != '1')
     if (!empty($id))
     {
       // We modify an existing reminder
-      $result = mysqli_query($link, "SELECT * FROM `keys` where `id`='$id'" );
+      $result = mysqli_query($mysql_link, "SELECT * FROM `keys` where `id`='$id'" );
       $row = mysqli_fetch_array( $result );
       $name = $row["name"];
       $key = $row["key"];
