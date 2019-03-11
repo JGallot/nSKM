@@ -34,7 +34,7 @@ else
     {
         $keyring_name = get_keyring_name($id_keyring);
 
-          $result = mysqli_query($link, "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
+          $result = mysqli_query($mysql_link, "SELECT * FROM `hak` where `id_keyring` = '$id_keyring' ORDER BY `id_host`" )
                                or die (mysqli_error()."<br>Couldn't execute query: $query");
           $nr = $result->num_rows;
 

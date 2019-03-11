@@ -45,7 +45,7 @@ $error_list = "";
           exit ();
         } else {
           // Update entries
-          mysqli_query($link, "UPDATE `keys` SET `name` = '$name', `key` = '$key' WHERE `id` = '$id' " );
+          mysqli_query($mysql_link, "UPDATE `keys` SET `name` = '$name', `key` = '$key' WHERE `id` = '$id' " );
           // Let's go to the Reminder List page
           header("Location:keys.php");
           echo ("Reminder Modified, redirecting...");
