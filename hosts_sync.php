@@ -26,24 +26,36 @@ if ($_POST['step']!=1)
     
     $hosts = json_decode($json,true);
 
-    foreach ($hosts AS $idex => $host)
+    foreach ($hosts['results'] AS $idex => $host)
     {
         // Get Foreman information of host
-        $json_hosts_details=file_get_contents($SKM_REPO_URL.'/api/hosts/'.$host['host']['id'].'?format=json',false, $context);
-        $hosts_details = json_decode($json_hosts_details,true);  
+        //$json_hosts_details=file_get_contents($SKM_REPO_URL.'/api/hosts/'.$host['host']['id'].'?format=json',false, $context);
+        //$hosts_details = json_decode($json_hosts_details,true);  
 
-        $repo_hosts[$idex]['name']=$hosts_details['host']['certname'];
-        $repo_hosts[$idex]['ip']=$hosts_details['host']['ip'];
+        $repo_hosts[$idex]['name']=$host['name'];
+        $repo_hosts[$idex]['ip']=$host['ip'];
         $repo_hosts[$idex]['icon']="images/server.gif";
     }
     // Get existing hosts in nSKM
     $actual_hosts=get_all_hosts();
-
+    
     // Determine if hosts are new
     foreach($repo_hosts AS $idx => $myhost){
        $check_name=$myhost['name'];
         if (recursive_array_search($check_name,$actual_hosts)==false) {
-            $hosts_2_add[]=$myhost;
+            if (empty($myhost['ip'])||$myhost['ip']=='')
+            {    // IP address is empty in formean --> lokup for ip in DNS
+                $ip_tmp = gethostbyname($myhost['name']);
+               
+                if ($ip_tmp==$myhost['name'])
+                    // No Ip found ... --> to delete
+                    $hosts_2_delete[]=$myhost;                  
+                else
+                    $myhost['ip']="$ip_tmp (found in DNS not in repository)";
+                    $hosts_2_add[]=$myhost;
+            }
+            else
+                $hosts_2_add[]=$myhost;
         }
     }
     // Determine if hosts are too old
@@ -52,7 +64,8 @@ if ($_POST['step']!=1)
         if (recursive_array_search($check_name,$repo_hosts)==false) {
             $hosts_2_delete[$idx]=$myhost;
         }
-    }
+    } 
+    $smarty->assign("bad_new_hosts",$bad_new_hosts);
     $smarty->assign("hosts_2_add",$hosts_2_add);
     $smarty->assign("hosts_2_delete",$hosts_2_delete);
      
@@ -67,7 +80,7 @@ else
     // Add new hosts
     foreach($hosts_2_add AS $idx => $hostname) {
         $ip=gethostbyname($hostname);
-        $res_add=add_host($hostname,$ip);
+        $res_add=add_host($hostname,$ip,'','','','','','','','','','','','','');
         
         if (!isset($res_add)) {
             $result[$hostname]['message'] = 'Added';
@@ -78,7 +91,6 @@ else
             $result[$hostname]['statut']='error';
         }
     }
-    
     // Delete old hosts    
     foreach($hosts_2_delete AS $idx => $host_id) {
         $hostname=get_host_name($host_id);
