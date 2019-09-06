@@ -80,7 +80,7 @@ else
     // Add new hosts
     foreach($hosts_2_add AS $idx => $hostname) {
         $ip=gethostbyname($hostname);
-        $res_add=add_host($hostname,$ip,'','','','','','','','','','','','','');
+        $res_add=add_host($hostname,$ip,1);
         
         if (!isset($res_add)) {
             $result[$hostname]['message'] = 'Added';

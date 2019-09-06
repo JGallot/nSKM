@@ -1247,35 +1247,36 @@ function delete_host($id_host)
 // Output :
 //      - null if deletion worked
 //      - error string if deletion failed
-function add_host($hostname,$ip='',$id_group='',$serialno='',$memory='',$osversion='',
-        $cabinet='',$uloc='',$cageno='',$model='',$procno='',$provider='',$install_dt,$po='',$cost='',
+function add_host($hostname,$ip='',$id_group=1,$serialno='',$memory='',$osversion='',
+        $cabinet='',$uloc='',$cageno='',$model='',$procno='',$provider='',$install_dt='',$po='',$cost='',
         $maint_cost='',$maint_po='',$maint_provider='',$maint_end_dt='',$life_end_dt='',$ostype='',
         $osvers='',$intf1='',$intf2='',$defaultgw='',$monitor='',$selinux='',$datechgroot='')
 {
     $mysql_link=$GLOBALS['mysql_link'];
 
-    $result = mysqli_query($mysql_link, "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,"
+    $req= "INSERT INTO `hosts` (`name`,`ip`,`id_group`,`serialno`,`memory`,`osversion`,`cabinet`,"
               . "`uloc`,`cageno`,`model`,`procno`,`provider`,`install_dt`,`po`,`cost`,`maint_cost`,`maint_po`,"
               . "`maint_provider`,`maint_end_dt`,`life_end_dt`,`ostype`,`osvers`,`intf1`,`intf2`,`defaultgw`,"
               . "`monitor`,`selinux`,`datechgroot`) "
-              . "VALUES('$hostname','$ip','$group','$serialno','$memory','$osversion','$cabinet','$uloc',"
+              . "VALUES('$hostname','$ip','$id_group','$serialno','$memory','$osversion','$cabinet','$uloc',"
               . "'$cageno','$model','$procno','$provider','$install_dt','$po','$cost','$maint_cost',"
               . "'$maint_po','$maint_provider','$maint_end_dt','$life_end_dt','$ostype','$osvers',"
-              . "'$intf1','$intf2','$defaultgw','$monitor','$selinux','$datechgroot')" );
+              . "'$intf1','$intf2','$defaultgw','$monitor','$selinux','$datechgroot')";
+    $result = mysqli_query($mysql_link, $req );
  
     if (!$result) {
         $err=mysqli_error($mysql_link);
-        echo "--".mysqli_error($mysql_link)."--";
+        //echo "--".mysqli_error($mysql_link)."--";
         mysqli_free_result($result);
         return($err);
      }
-    $id = mysqli_insert_id();
+    $id = mysqli_insert_id($mysql_link);
 
     // add account root (id 1) to created host
-    $result = mysqli_query($mysql_link,"INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('$id','1')");
+    $result = mysqli_query($mysql_link,"INSERT INTO `hosts-accounts` (`id_host`,`id_account`) VALUES ('".$id."','1')");
    if (!$result) {
         $err=mysqli_error($mysql_link);
-        echo "--".mysqli_error($mysql_link)."--";
+        //echo "--".mysqli_error($mysql_link)."--";
         mysqli_free_result($result);
         return($err);
      }
